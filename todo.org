@@ -1,5 +1,3 @@
-* fix tests
-* commit/push
 * finish struct cf_id
 ** thread local cq_map cf_ids()
 ** finish cf_parse_id()
