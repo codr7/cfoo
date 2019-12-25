@@ -1,0 +1,10 @@
+fib-rec(n:Int)
+  {n.< 2}.if n {fib-rec n.- 1}.+ {fib-rec n.- 2}
+
+fib-tail(0 a _) a
+fib-tail(1 _ b) b
+fib-tail(n a b) _.recall n.- 1 b a.+ b
+
+let s ()
+for 10000 n s.push n
+for 10000 _ s.pop
