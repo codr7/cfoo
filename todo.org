@@ -1,0 +1,7 @@
+* add cf_error() to status.h
+* commit/push
+* finish struct cf_id
+** thread local cq_map cf_ids()
+* add cf_deinit()
+** cf_ids()
+** cf_tokens()
