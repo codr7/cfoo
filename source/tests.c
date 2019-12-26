@@ -10,8 +10,8 @@ int main() {
   
   struct cf_status *s = NULL;
   struct cq_deque out;
-  cq_deque_init(&out, cf_tokens());
-  s = cf_parse(t, "foo bar baz 42", &out, NULL);
+  cq_deque_init(&out, &t->token_pool);
+  s = cf_parse(t, "foo bar baz", &out, NULL);
   assert(s == cf_ok());
   return 0;
 }
