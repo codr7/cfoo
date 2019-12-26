@@ -1,6 +1,3 @@
-* add struct cf_point
-** struct cf_id *file, int16_t line, column
-** update cf_error macro
 * finish struct cf_id
 ** struct cq_set cf_thread.ids
 ** finish cf_parse_id()
