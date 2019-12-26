@@ -1,10 +1,11 @@
+* rename status to error
+** add cf_thread.errors/pool
+** remove cf_ok()/CF_OK
+** change parse to check t.errors
 * finish struct cf_id
-** thread local cq_map cf_ids()
+** struct cq_set cf_thread.ids
 ** finish cf_parse_id()
 * add struct cf_point
 ** struct cf_id *file, int16_t line, column
 ** update cf_error macro
-* add cf_deinit()
-** cf_ids()
-** cf_threads()
-** cf_tokens()
+* protect access to cf_threads() with mutex
