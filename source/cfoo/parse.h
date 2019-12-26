@@ -4,19 +4,14 @@
 struct cf_thread;
 struct cq_deque;
 
-struct cf_status *cf_parse(struct cf_thread *thread,
+const char *cf_parse(struct cf_thread *t, const char *in, struct cq_deque *out);
+
+const char *cf_parse_token(struct cf_thread *t,
 			   const char *in,
-			   struct cq_deque *out,
-			   const char **end);
+			   struct cq_deque *out);
 
-struct cf_status *cf_parse_token(struct cf_thread *thread,
-				 const char *in,
-				 struct cq_deque *out,
-				 const char **end);
-
-struct cf_status *cf_parse_id(struct cf_thread *thread,
-			      const char *in,
-			      struct cq_deque *out,
-			      const char **end);
+const char *cf_parse_id(struct cf_thread *t,
+			const char *in,
+			struct cq_deque *out);
 
 #endif

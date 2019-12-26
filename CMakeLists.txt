@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.5)
 
 project(cfoo)
-add_compile_options(-std=c99 -Wall -Werror -O2 -g)
+add_compile_options(-std=c11 -Wall -Werror -O2 -g)
 
 file(GLOB_RECURSE sources source/cfoo/*.c)
 
