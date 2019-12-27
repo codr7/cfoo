@@ -7,7 +7,7 @@
 
 struct cf_thread {
   bool debug;
-  struct cq_pool error_pool, token_pool;
+  struct cq_pool error_pool, form_pool;
   struct cq_deque errors;
 };
 

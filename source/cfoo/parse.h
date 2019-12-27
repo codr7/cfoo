@@ -10,7 +10,7 @@ const char *cf_parse(struct cf_thread *t,
 		     const char *in,
 		     struct cq_deque *out);
 
-const char *cf_parse_token(struct cf_thread *t,
+const char *cf_parse_form(struct cf_thread *t,
 			   struct cf_point *p,
 			   const char *in,
 			   struct cq_deque *out);

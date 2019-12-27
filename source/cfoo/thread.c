@@ -1,7 +1,7 @@
 #include "cfoo/config.h"
 #include "cfoo/error.h"
 #include "cfoo/thread.h"
-#include "cfoo/token.h"
+#include "cfoo/form.h"
 
 struct cf_thread *cf_thread_new() {
   cf_threads_lock();
@@ -9,7 +9,7 @@ struct cf_thread *cf_thread_new() {
   cf_threads_unlock();
   t->debug = false;
   cq_pool_init(&t->error_pool, CF_ERROR_BLOCK_SIZE, sizeof(struct cf_error));
-  cq_pool_init(&t->token_pool, CF_TOKEN_BLOCK_SIZE, sizeof(struct cf_token));
+  cq_pool_init(&t->form_pool, CF_FORM_BLOCK_SIZE, sizeof(struct cf_form));
   cq_deque_init(&t->errors, &t->error_pool);
   return t;
 }
