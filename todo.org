@@ -1,8 +1,5 @@
-* finish struct cf_id
-** struct cq_set cf_thread.ids
-** finish cf_parse_id()
-* finish cf_threads_lock/unlock
+* finish cf_parse_id()
+* cf_thread.channel
+** cf_channel
 ** C11 threads
-* cf_channel
 ** store in deque
-** cf_thread.channel

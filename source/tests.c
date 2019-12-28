@@ -15,5 +15,6 @@ int main() {
   assert(cf_ok(t));
   assert(!*cf_parse(t, &p, "foo bar baz", &out));
   assert(p.line == CF_MIN_LINE && p.column == 11); 
+  cf_thread_free(t);
   return 0;
 }
