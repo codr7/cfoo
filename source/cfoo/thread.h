@@ -1,10 +1,10 @@
 #ifndef CFOO_THREAD_H
 #define CFOO_THREAD_H
 
-#include <c7/deque.h>
-#include <c7/dqpool.h>
-#include <c7/rbpool.h>
-#include <c7/rbtree.h>
+#include <codr7/deque.h>
+#include <codr7/dqpool.h>
+#include <codr7/rbpool.h>
+#include <codr7/rbtree.h>
 #include <stdbool.h>
 
 struct cf_thread {

@@ -1,12 +1,12 @@
 #include <stddef.h>
 #include <stdio.h>
 #include <string.h>
-#include "c7/deque.h"
 #include "cfoo/error.h"
 #include "cfoo/form.h"
 #include "cfoo/id.h"
 #include "cfoo/parse.h"
 #include "cfoo/point.h"
+#include "codr7/deque.h"
 
 const char *cf_parse(struct cf_thread *t,
 		     struct cf_point *p,

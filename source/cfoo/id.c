@@ -1,9 +1,9 @@
 #include <ctype.h>
 #include <stdlib.h>
-#include "c7/rbtree.h"
-#include "c7/utils.h"
 #include "cfoo/id.h"
 #include "cfoo/thread.h"
+#include "codr7/rbtree.h"
+#include "codr7/utils.h"
 
 struct cf_id *cf_id_init(struct cf_id *id, const char *name) {
   id->name = c7_strdup(name);
