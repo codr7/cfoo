@@ -9,12 +9,14 @@ int main() {
   struct cf_thread *t = cf_thread_new();
   t->debug = true;
   
-  struct cq_deque out;
-  cq_deque_init(&out, &t->form_pool);
+  struct c7_deque out;
+  c7_deque_init(&out, &t->form_pool);
   struct cf_point p = cf_point("n/a", CF_MIN_LINE, CF_MIN_COLUMN);
   assert(cf_ok(t));
   assert(!*cf_parse(t, &p, "foo bar baz", &out));
-  assert(p.line == CF_MIN_LINE && p.column == 11); 
+  assert(out.count == 3);
+  assert(p.line == CF_MIN_LINE && p.column == 11);
+  c7_deque_deinit(&out);
   cf_thread_free(t);
   return 0;
 }

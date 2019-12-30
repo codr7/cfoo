@@ -18,7 +18,7 @@ struct cf_error *_cf_error(struct cf_thread *t,
     abort();
   }
   
-  struct cf_error *e = cq_deque_push_back(&t->errors);
+  struct cf_error *e = c7_deque_push_back(&t->errors);
   e->code = code;
   va_list len_args;
   va_copy(len_args, args);
