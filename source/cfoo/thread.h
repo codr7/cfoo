@@ -9,8 +9,9 @@
 
 struct cf_thread {
   bool debug;
-  struct c7_dqpool error_pool, form_pool;
+  struct c7_dqpool error_pool;
   struct c7_deque errors;
+  struct c7_dqpool form_pool;
   struct c7_rbpool id_pool;
   struct c7_rbtree ids;
 };
