@@ -11,8 +11,9 @@ target_include_directories(lib_static PUBLIC source/)
 target_link_libraries(lib_static codr7)
 
 add_executable(tests ${sources} source/tests.c)
+add_compile_options(tests -fsanitize=undefined)
 target_include_directories(tests PUBLIC source/)
-target_link_libraries(tests codr7)
+target_link_libraries(tests codr7 ubsan)
 
 file(GLOB headers source/cfoo/*.h)
 install(FILES ${headers} DESTINATION include/cfoo)

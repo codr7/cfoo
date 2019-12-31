@@ -23,10 +23,8 @@ static bool deinit_id(void *id, void *_) {
 
 void cf_thread_free(struct cf_thread *t) {
   c7_rbtree_while(&t->ids, deinit_id, NULL);
-  c7_rbtree_deinit(&t->ids);
   c7_rbpool_deinit(&t->id_pool);
   c7_dqpool_deinit(&t->form_pool);
-  c7_deque_deinit(&t->errors);
   c7_dqpool_deinit(&t->error_pool);
   free(t);
 }

@@ -16,7 +16,7 @@ int main() {
   assert(!*cf_parse(t, &p, "foo bar baz", &out));
   assert(out.count == 3);
   assert(p.line == CF_MIN_LINE && p.column == 11);
-  c7_deque_deinit(&out);
+  c7_deque_clear(&out);
   cf_thread_free(t);
   return 0;
 }
