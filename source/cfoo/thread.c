@@ -1,9 +1,10 @@
 #include <stdlib.h>
 #include "cfoo/config.h"
 #include "cfoo/error.h"
+#include "cfoo/form.h"
 #include "cfoo/id.h"
 #include "cfoo/thread.h"
-#include "cfoo/form.h"
+#include "cfoo/value.h"
 
 struct cf_thread *cf_thread_new() {
   struct cf_thread *t = malloc(sizeof(struct cf_thread));
@@ -13,6 +14,8 @@ struct cf_thread *cf_thread_new() {
   c7_dqpool_init(&t->form_pool, CF_FORM_SLAB_SIZE, sizeof(struct cf_form));
   c7_rbpool_init(&t->id_pool, CF_ID_SLAB_SIZE, sizeof(struct cf_id));
   c7_rbtree_init(&t->ids, cf_id_compare, &t->id_pool);
+  c7_dqpool_init(&t->chan_pool, CF_CHAN_SLAB_SIZE, sizeof(struct cf_value));
+  c7_chan_init(&t->chan, &t->chan_pool);
   return t;
 }
 
@@ -22,6 +25,8 @@ static bool deinit_id(void *id, void *_) {
 }
 
 void cf_thread_free(struct cf_thread *t) {
+  c7_chan_deinit(&t->chan);
+  c7_dqpool_deinit(&t->chan_pool);
   c7_rbtree_while(&t->ids, deinit_id, NULL);
   c7_rbpool_deinit(&t->id_pool);
   c7_dqpool_deinit(&t->form_pool);

@@ -1,11 +1,13 @@
 #ifndef CFOO_THREAD_H
 #define CFOO_THREAD_H
 
+#include <stdbool.h>
+
+#include <codr7/chan.h>
 #include <codr7/deque.h>
 #include <codr7/dqpool.h>
 #include <codr7/rbpool.h>
 #include <codr7/rbtree.h>
-#include <stdbool.h>
 
 struct cf_thread {
   bool debug;
@@ -14,6 +16,8 @@ struct cf_thread {
   struct c7_dqpool form_pool;
   struct c7_rbpool id_pool;
   struct c7_rbtree ids;
+  struct c7_dqpool chan_pool;
+  struct c7_chan chan;
 };
 
 struct cf_thread *cf_thread_new();
