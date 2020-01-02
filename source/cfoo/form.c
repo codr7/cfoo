@@ -23,6 +23,8 @@ void cf_form_deinit(struct cf_form *form) {
   case CF_PARAMS:
     cf_clear_forms(&form->as_params);
     break;
+  case CF_VALUE:
+    cf_value_deinit(&form->as_value);
   default:
     break;
   }

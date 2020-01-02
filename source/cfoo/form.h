@@ -3,10 +3,12 @@
 
 #include <codr7/deque.h>
 
+#include <cfoo/value.h>
+
 struct cf_id;
 struct cf_thread;
 
-enum cf_form_type {CF_ID, CF_PARAMS};
+enum cf_form_type {CF_ID, CF_PARAMS, CF_VALUE};
 
 struct cf_form {
   enum cf_form_type type;
@@ -14,6 +16,7 @@ struct cf_form {
   union {
     struct cf_id *as_id;
     struct c7_deque as_params;
+    struct cf_value as_value;
   };
 };
 

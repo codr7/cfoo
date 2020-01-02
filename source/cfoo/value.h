@@ -11,4 +11,7 @@ struct cf_value {
   };
 };
 
+struct cf_value *cf_value_init(struct cf_value *value, struct cf_type *type);
+void cf_value_deinit(struct cf_value *value);
+
 #endif

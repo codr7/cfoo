@@ -9,7 +9,7 @@
 	    __FILE__, __LINE__,						\
 	    code,							\
 	    "Error in %s, line %" PRId16 ", column %" PRId16 "\n" spec,	\
-	    "n/a", p.line, p.column, ## __VA_ARGS__, NULL)
+	    "n/a", (p).line, (p).column, ## __VA_ARGS__, NULL)
 
 struct cf_thread;
 

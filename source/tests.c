@@ -3,6 +3,7 @@
 
 #include "cfoo/error.h"
 #include "cfoo/form.h"
+#include "cfoo/id.h"
 #include "cfoo/parse.h"
 #include "cfoo/point.h"
 #include "cfoo/thread.h"
@@ -10,15 +11,31 @@
 static void parse_tests(struct cf_thread *t) {
   struct c7_deque out;
   c7_deque_init(&out, &t->form_pool);
-  struct cf_point p = cf_point("n/a", CF_MIN_LINE, CF_MIN_COLUMN);
-  assert(cf_ok(t));
+  
+  struct cf_point p = cf_point(cf_id(t, "id test"), CF_MIN_LINE, CF_MIN_COLUMN);
   assert(!*cf_parse(t, "foo bar baz", &p, &out));
+  assert(cf_ok(t));
   assert(out.count == 3);
   assert(p.line == CF_MIN_LINE && p.column == 11);
   cf_clear_forms(&out);
 
-  p = cf_point("n/a", CF_MIN_LINE, CF_MIN_COLUMN);
+  p = cf_point(cf_id(t, "int test"), CF_MIN_LINE, CF_MIN_COLUMN);
+  assert(!*cf_parse(t, "4_2 0b10_10_10 0x2_a", &p, &out));
+  assert(cf_ok(t));
+  assert(out.count == 3);
+
+  c7_deque_do(&out, _f) {
+    struct cf_form *f = _f;
+    assert(f->type == CF_VALUE);
+    assert(f->as_value.as_int64 == 42);
+  }
+
+  assert(p.line == CF_MIN_LINE && p.column == 20);
+  cf_clear_forms(&out);
+
+  p = cf_point(cf_id(t, "param test"), CF_MIN_LINE, CF_MIN_COLUMN);
   assert(!*cf_parse(t, "(foo bar baz)", &p, &out));
+  assert(cf_ok(t));
   assert(out.count == 1);
   struct cf_form *f = c7_deque_back(&out);
   assert(f->type = CF_PARAMS);
