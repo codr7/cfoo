@@ -126,7 +126,7 @@ const char *cf_parse_num(struct cf_thread *t,
   char c = 0;
   
   while ((c = *in)) {
-    if (c == ' ' || c == '\t' || c == '\n' || c == '(' || c == ')') {
+    if (c == ' ' || c == '\n' || c == '(' || c == ')') {
       break;
     }
 
