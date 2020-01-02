@@ -1,9 +1,9 @@
 let fib-rec(n:Int)
   if n.<(2) n fib-rec(n.-(1)).+(fib-rec(n.- 2))
 
-fib-tail(0 a _) a
-fib-tail(1 _ b) b
-fib-tail(n a b) fib-tail(n.-(1) b a.+(b))
+let fib-tail(0 a _) a
+let fib-tail(1 _ b) b
+let fib-tail(n a b) fib-tail(n.-(1) b a.+(b))
 
 let s []
 for 10000 n s.push(n)
