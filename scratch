@@ -1,4 +1,4 @@
-fib-rec(n:Int)
+let fib-rec(n:Int)
   if n.<(2) n fib-rec(n.-(1)).+(fib-rec(n.- 2))
 
 fib-tail(0 a _) a

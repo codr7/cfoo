@@ -6,9 +6,9 @@
 #include "cfoo/thread.h"
 
 struct cf_error *_cf_error(struct cf_thread *t,
-			    const char *file, int line,
-			    enum cf_error_code code,
-			    const char *spec, ...) {
+			   const char *file, int line,
+			   enum cf_error_code code,
+			   const char *spec, ...) {
   va_list args;
   va_start(args, spec);
 
