@@ -8,39 +8,46 @@
 #include "cfoo/point.h"
 #include "codr7/deque.h"
 
+static const char *skip(const char *in, struct cf_point *p) {
+  for (;;) {
+    switch (*in) {
+    case ' ':
+      in++;
+      p->column++;
+      break;
+    case '\n':
+      in++;
+      p->line++;
+      p->column = CF_MIN_COLUMN;
+    default:
+      return in;
+    }
+  }
+}
+
 const char *cf_parse(struct cf_thread *t,
-		     struct cf_point *p,
 		     const char *in,
+		     struct cf_point *p,
 		     struct c7_deque *out) {
   do {
-    in = cf_parse_form(t, p, in, out);
+    in = cf_parse_form(t, skip(in, p), p, out);
   } while (*in && cf_ok(t));
 
   return in;
 }
 
 const char *cf_parse_form(struct cf_thread *t,
-			   struct cf_point *p,
 			   const char *in,
+			   struct cf_point *p,
 			   struct c7_deque *out) {
   char c = *in;
   
   switch (c) {
   case 0:
     return in;
-  case ' ':
-    while (*in == ' ' || *in == '\t') { 
-      in++;
-      p->column++;
-    }
-    
-    return cf_parse_form(t, p, in, out);
-  case '\n':
-    p->line++;
-    p->column = CF_MIN_COLUMN;
   default:
     if (cf_id_char(c)) {
-      return cf_parse_id(t, p, in, out);
+      return cf_parse_id(t, in, p, out);
     }
   }
   
@@ -49,8 +56,8 @@ const char *cf_parse_form(struct cf_thread *t,
 }
 
 const char *cf_parse_id(struct cf_thread *t,
-			struct cf_point *p,
 			const char *in,
+			struct cf_point *p,
 			struct c7_deque *out) {
   const char *start = in;
 

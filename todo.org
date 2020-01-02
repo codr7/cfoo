@@ -1,6 +1,1 @@
-* deinit cf_thread.ids
-* --
 * cf_thread.channel
-** cf_channel
-** C11 threads
-** store in deque
