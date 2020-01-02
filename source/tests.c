@@ -20,7 +20,7 @@ static void parse_tests(struct cf_thread *t) {
   cf_clear_forms(&out);
 
   p = cf_point(cf_id(t, "int test"), CF_MIN_LINE, CF_MIN_COLUMN);
-  assert(!*cf_parse(t, "4_2 0b10_10_10 0x2_a", &p, &out));
+  assert(!*cf_parse(t, "42 0b101010 0x2a", &p, &out));
   assert(cf_ok(t));
   assert(out.count == 3);
 
@@ -30,7 +30,7 @@ static void parse_tests(struct cf_thread *t) {
     assert(f->as_value.as_int64 == 42);
   }
 
-  assert(p.line == CF_MIN_LINE && p.column == 20);
+  assert(p.line == CF_MIN_LINE && p.column == 16);
   cf_clear_forms(&out);
 
   p = cf_point(cf_id(t, "param test"), CF_MIN_LINE, CF_MIN_COLUMN);

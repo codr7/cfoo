@@ -130,17 +130,14 @@ const char *cf_parse_num(struct cf_thread *t,
       break;
     }
 
-    if (c != '_') {
-      int dv = char_int(c, base);
-      
-      if (dv == -1) {
-	cf_error(t, *p, CF_ESYNTAX, "Invalid numeric char: %c (%d)", c, (int)c);
-	return NULL;
-      }
-      
-      v = v * base + dv;
+    int dv = char_int(c, base);
+    
+    if (dv == -1) {
+      cf_error(t, *p, CF_ESYNTAX, "Invalid numeric char: %c (%d)", c, (int)c);
+      return NULL;
     }
     
+    v = v * base + dv;
     in++;
     p->column++;
   }
