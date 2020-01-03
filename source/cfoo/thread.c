@@ -28,7 +28,7 @@ struct cf_thread *cf_thread_new() {
   c7_rbtree_init(&t->types, cf_type_compare, &t->type_pool);
 
   c7_dqpool_init(&t->chan_pool, CF_SLAB_SIZE, sizeof(struct cf_value));
-  c7_chan_init(&t->chan, &t->chan_pool);
+  c7_chan_init(&t->chan, &t->chan_pool, 0);
 
   t->int64_type = add_type(t, "Int64");
   return t;
