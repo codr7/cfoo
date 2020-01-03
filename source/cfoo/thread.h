@@ -17,13 +17,15 @@ struct cf_thread {
   struct c7_dqpool error_pool;
   struct c7_deque errors;
   struct c7_dqpool form_pool;
+
   struct c7_rbpool id_pool;
   struct c7_rbtree ids;
+
   struct c7_rbpool type_pool;
   struct c7_rbtree types;
-  struct c7_dqpool chan_pool;
-  struct c7_chan chan;
 
+  struct c7_chan chan;
+  
   struct cf_type *int64_type;
 };
 
