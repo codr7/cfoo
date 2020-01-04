@@ -70,7 +70,7 @@ struct cf_thread *cf_thread_new() {
   c7_rbpool_init(&t->binding_pool, CF_SLAB_SIZE, sizeof(struct cf_binding));
   c7_rbtree_init(&t->bindings, compare_binding, &t->binding_pool);
 
-  c7_chan_init(&t->chan, sizeof(struct cf_value), 0);
+  c7_chan_init(&t->chan, CF_SLAB_SIZE, sizeof(struct cf_value), 0);
 
   t->meta_type = NULL;
   t->meta_type = add_meta_type(t);
