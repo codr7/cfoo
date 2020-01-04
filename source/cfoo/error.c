@@ -5,20 +5,20 @@
 #include "cfoo/error.h"
 #include "cfoo/thread.h"
 
-struct cf_error *_cf_error(struct cf_thread *t,
+struct cf_error *_cf_error(struct cf_thread *thread,
 			   const char *file, int line,
 			   enum cf_error_code code,
 			   const char *spec, ...) {
   va_list args;
   va_start(args, spec);
 
-  if (t->debug) {
+  if (thread->debug) {
     fprintf(stderr, "Error in %s, line %d\n", file, line);
     vfprintf(stderr, spec, args);
     abort();
   }
   
-  struct cf_error *e = c7_deque_push_back(&t->errors);
+  struct cf_error *e = c7_deque_push_back(&thread->errors);
   e->code = code;
   va_list len_args;
   va_copy(len_args, args);
@@ -40,6 +40,6 @@ struct cf_error *_cf_error(struct cf_thread *t,
   return e;
 }
 
-bool cf_ok(struct cf_thread *t) {
-  return !t->errors.count;
+bool cf_ok(struct cf_thread *thread) {
+  return !thread->errors.count;
 }

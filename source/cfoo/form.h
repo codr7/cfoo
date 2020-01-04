@@ -22,7 +22,7 @@ struct cf_form {
 
 struct cf_form *cf_form_init(struct cf_form *form,
 			     enum cf_form_type type,
-			     struct cf_thread *t);
+			     struct cf_thread *thread);
 
 void cf_form_deinit(struct cf_form *form);
 

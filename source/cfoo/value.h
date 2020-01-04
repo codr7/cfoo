@@ -15,6 +15,7 @@ struct cf_value {
   union {
     int64_t as_int64;
     struct cf_type *as_meta;
+    struct cf_method *as_method;
     struct timespec as_time;
   };
 };

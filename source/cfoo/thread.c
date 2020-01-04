@@ -4,51 +4,53 @@
 #include "cfoo/error.h"
 #include "cfoo/form.h"
 #include "cfoo/id.h"
+#include "cfoo/method.h"
 #include "cfoo/thread.h"
 #include "cfoo/type.h"
-#include "cfoo/value.h"
+
+static enum c7_order compare_binding(const void *key, const void *value) {
+  return cf_id_compare(key, ((const struct cf_binding *)value)->id);
+}
 
 static enum c7_order compare_id(const void *key, const void *value) {
   return c7_compare_str(key, ((const struct cf_id *)value)->name);
+}
+
+static enum c7_order compare_method(const void *key, const void *value) {
+  return cf_id_compare(key, ((const struct cf_method *)value)->id);
 }
 
 static enum c7_order compare_type(const void *key, const void *value) {
   return cf_id_compare(key, ((const struct cf_type *)value)->id);
 }
 
-static enum c7_order compare_binding(const void *key, const void *value) {
-  return cf_id_compare(key, ((const struct cf_binding *)value)->id);
-}
-
-static struct cf_type *add_type(struct cf_thread *t, const char *name) {
-  const struct cf_id *id = cf_id(t, name);
-  struct cf_type *type = cf_type_init(c7_rbtree_add(&t->types, id), t, id);
-
-  cf_value_init(&cf_binding_init(c7_rbtree_add(&t->bindings, id),
-				 &t->bindings,
-				 id)->value,
-		t->meta_type ? t->meta_type : type)->as_meta = cf_type_ref(type);
-  
+static struct cf_type *add_int64_type(struct cf_thread *thread) {
+  struct cf_type *type = cf_add_type(thread, cf_id(thread, "Int64"));
   return type;
 }
 
-static struct cf_type *add_int64_type(struct cf_thread *t) {
-  struct cf_type *type = add_type(t, "Int64");
-  return type;
-}
-
-static void deinit_meta(struct cf_value *v) {
+static void meta_deinit(struct cf_value *v) {
   cf_type_deref(v->as_meta);
 }
 
-static struct cf_type *add_meta_type(struct cf_thread *t) {
-  struct cf_type *type = add_type(t, "Meta");
-  type->deinit_value = deinit_meta;
+static struct cf_type *add_meta_type(struct cf_thread *thread) {
+  struct cf_type *type = cf_add_type(thread, cf_id(thread, "Meta"));
+  type->deinit_value = meta_deinit;
   return type;
 }
 
-static struct cf_type *add_time_type(struct cf_thread *t) {
-  struct cf_type *type = add_type(t, "Time");
+static void method_deinit(struct cf_value *v) {
+  cf_method_deref(v->as_method);
+}
+
+static struct cf_type *add_method_type(struct cf_thread *thread) {
+  struct cf_type *type = cf_add_type(thread, cf_id(thread, "Method"));
+  type->deinit_value = method_deinit;
+  return type;
+}
+
+static struct cf_type *add_time_type(struct cf_thread *thread) {
+  struct cf_type *type = cf_add_type(thread, cf_id(thread, "Time"));
   return type;
 }
 
@@ -67,6 +69,9 @@ struct cf_thread *cf_thread_new() {
   c7_rbpool_init(&t->type_pool, CF_SLAB_SIZE, sizeof(struct cf_type));
   c7_rbtree_init(&t->types, compare_type, &t->type_pool);
 
+  c7_rbpool_init(&t->method_pool, CF_SLAB_SIZE, sizeof(struct cf_method));
+  c7_rbtree_init(&t->methods, compare_method, &t->method_pool);
+
   c7_rbpool_init(&t->binding_pool, CF_SLAB_SIZE, sizeof(struct cf_binding));
   c7_rbtree_init(&t->bindings, compare_binding, &t->binding_pool);
 
@@ -74,6 +79,7 @@ struct cf_thread *cf_thread_new() {
 
   t->meta_type = NULL;
   t->meta_type = add_meta_type(t);
+  t->method_type = add_method_type(t);
   t->int64_type = add_int64_type(t);
   t->time_type = add_time_type(t);
   return t;
@@ -89,30 +95,39 @@ static bool deinit_id(void *id, void *_) {
   return true;
 }
 
+static bool deinit_method(void *method, void *_) {
+  cf_method_deref(method);
+  return true;
+}
+
 static bool deinit_type(void *type, void *_) {
   cf_type_deref(type);
   return true;
 }
 
-void cf_thread_free(struct cf_thread *t) {
-  c7_chan_deinit(&t->chan);
+void cf_thread_free(struct cf_thread *thread) {
+  c7_chan_deinit(&thread->chan);
   
-  c7_rbtree_while(&t->bindings, deinit_binding, NULL);
-  c7_rbtree_clear(&t->bindings);
-  c7_rbpool_deinit(&t->binding_pool);
+  c7_rbtree_while(&thread->bindings, deinit_binding, NULL);
+  c7_rbtree_clear(&thread->bindings);
+  c7_rbpool_deinit(&thread->binding_pool);
 
-  c7_rbtree_while(&t->types, deinit_type, NULL);
-  c7_rbtree_clear(&t->types);
-  c7_rbpool_deinit(&t->type_pool);
+  c7_rbtree_while(&thread->methods, deinit_method, NULL);
+  c7_rbtree_clear(&thread->methods);
+  c7_rbpool_deinit(&thread->method_pool);
+
+  c7_rbtree_while(&thread->types, deinit_type, NULL);
+  c7_rbtree_clear(&thread->types);
+  c7_rbpool_deinit(&thread->type_pool);
   
-  c7_rbtree_while(&t->ids, deinit_id, NULL);
-  c7_rbtree_clear(&t->ids);
-  c7_rbpool_deinit(&t->id_pool);
+  c7_rbtree_while(&thread->ids, deinit_id, NULL);
+  c7_rbtree_clear(&thread->ids);
+  c7_rbpool_deinit(&thread->id_pool);
 
-  c7_dqpool_deinit(&t->form_pool);
+  c7_dqpool_deinit(&thread->form_pool);
 
-  c7_deque_clear(&t->errors);
-  c7_dqpool_deinit(&t->error_pool);
+  c7_deque_clear(&thread->errors);
+  c7_dqpool_deinit(&thread->error_pool);
 
-  free(t);
+  free(thread);
 }

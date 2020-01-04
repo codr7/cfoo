@@ -16,6 +16,6 @@ enum c7_order cf_id_compare(const struct cf_id *x,
 			    const struct cf_id *y);
 
 bool cf_id_char(char c);
-const struct cf_id *cf_id(struct cf_thread *t, const char *name);
+const struct cf_id *cf_id(struct cf_thread *thread, const char *name);
 
 #endif

@@ -12,37 +12,37 @@
 #include "cfoo/thread.h"
 #include "cfoo/value.h"
 
-static const char *skip(const char *in, struct cf_point *p) {
+static const char *skip(const char *in, struct cf_point *point) {
   for (;;) {
     switch (*in) {
     case ' ':
       in++;
-      p->column++;
+      point->column++;
       break;
     case '\n':
       in++;
-      p->line++;
-      p->column = CF_MIN_COLUMN;
+      point->line++;
+      point->column = CF_MIN_COLUMN;
     default:
       return in;
     }
   }
 }
 
-const char *cf_parse(struct cf_thread *t,
+const char *cf_parse(struct cf_thread *thread,
 		     const char *in,
-		     struct cf_point *p,
+		     struct cf_point *point,
 		     struct c7_deque *out) {
   do {
-    in = cf_parse_form(t, skip(in, p), p, out);
-  } while (*in && cf_ok(t));
+    in = cf_parse_form(thread, skip(in, point), point, out);
+  } while (*in && cf_ok(thread));
 
   return in;
 }
 
-const char *cf_parse_form(struct cf_thread *t,
+const char *cf_parse_form(struct cf_thread *thread,
 			   const char *in,
-			   struct cf_point *p,
+			   struct cf_point *point,
 			   struct c7_deque *out) {
   char c = *in;
   
@@ -50,37 +50,40 @@ const char *cf_parse_form(struct cf_thread *t,
   case 0:
     return in;
   case '(':
-    return cf_parse_params(t, in, p, out);
+    return cf_parse_params(thread, in, point, out);
   default:
     if (cf_id_char(c)) {
-      return cf_parse_id(t, in, p, out);
+      return cf_parse_id(thread, in, point, out);
     }
 
     if (isdigit(c)) {
-      return cf_parse_num(t, in, p, out);
+      return cf_parse_num(thread, in, point, out);
     }
   }
   
-  cf_error(t, *p, CF_ESYNTAX, "Unexpected char: %c (%d)", c, (int)c);
+  cf_error(thread, *point, CF_ESYNTAX, "Unexpected char: %c (%d)", c, (int)c);
   return NULL;
 }
 
-const char *cf_parse_id(struct cf_thread *t,
+const char *cf_parse_id(struct cf_thread *thread,
 			const char *in,
-			struct cf_point *p,
+			struct cf_point *point,
 			struct c7_deque *out) {
   const char *start = in;
 
   while (*in && cf_id_char(*in)) {
     in++;
-    p->column++;
+    point->column++;
   }
 
   size_t l = in - start;
   char name[l + 1];
   name[l] = 0;
   strncpy(name, start, l);
-  cf_form_init(c7_deque_push_back(out), CF_ID, t)->as_id = cf_id(t, name);
+
+  cf_form_init(c7_deque_push_back(out), CF_ID, thread)->as_id =
+    cf_id(thread, name);
+  
   return in;
 }
 
@@ -96,27 +99,27 @@ static int char_int(char c, int base) {
   return -1;
 }
 
-const char *cf_parse_num(struct cf_thread *t,
+const char *cf_parse_num(struct cf_thread *thread,
 			 const char *in,
-			 struct cf_point *p,
+			 struct cf_point *point,
 			 struct c7_deque *out) {
   int64_t v = 0;
   int base = 10;
   
   if (*in == '0') {
     in++;
-    p->column++;
+    point->column++;
     
     switch (*in) {
     case 'b':
       base = 2;
       in++;
-      p->column++;
+      point->column++;
       break;
     case 'x':
       base = 16;
       in++;
-      p->column++;
+      point->column++;
       break;
     default:
       break;
@@ -133,47 +136,51 @@ const char *cf_parse_num(struct cf_thread *t,
     int dv = char_int(c, base);
     
     if (dv == -1) {
-      cf_error(t, *p, CF_ESYNTAX, "Invalid numeric char: %c (%d)", c, (int)c);
+      cf_error(thread, *point, CF_ESYNTAX,
+	       "Invalid numeric char: %c (%d)", c, (int)c);
+      
       return NULL;
     }
     
     v = v * base + dv;
     in++;
-    p->column++;
+    point->column++;
   }
 
-  cf_value_init(&cf_form_init(c7_deque_push_back(out), CF_VALUE, t)->as_value,
-		t->int64_type)->as_int64 = v;
+  cf_value_init(&cf_form_init(c7_deque_push_back(out),
+			      CF_VALUE,
+			      thread)->as_value,
+		thread->int64_type)->as_int64 = v;
   
   return in;
 }
 
-const char *cf_parse_params(struct cf_thread *t,
+const char *cf_parse_params(struct cf_thread *thread,
 			    const char *in,
-			    struct cf_point *p,
+			    struct cf_point *point,
 			    struct c7_deque *out) {
   char c = *in;
   
   if (c != '(') {
-    cf_error(t, *p, CF_ESYNTAX, "Invalid params: %c (%d)", c, (int)c);
+    cf_error(thread, *point, CF_ESYNTAX, "Invalid params: %c (%d)", c, (int)c);
     return NULL;
   }
 
   in++;
-  p->column++;
-  struct cf_form *f = cf_form_init(c7_deque_push_back(out), CF_PARAMS, t);
+  point->column++;
+  struct cf_form *f = cf_form_init(c7_deque_push_back(out), CF_PARAMS, thread);
   
   do {
-    in = skip(in, p);
+    in = skip(in, point);
     
     if (*in == ')') {
-      p->column++;
+      point->column++;
       return ++in;
     }
 
-    in = cf_parse_form(t, in, p, &f->as_params);
-  } while (*in && cf_ok(t));
+    in = cf_parse_form(thread, in, point, &f->as_params);
+  } while (*in && cf_ok(thread));
   
-  cf_error(t, *p, CF_ESYNTAX, "Open params");
+  cf_error(thread, *point, CF_ESYNTAX, "Open params");
   return NULL;
 }

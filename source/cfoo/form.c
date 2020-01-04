@@ -4,12 +4,12 @@
 
 struct cf_form *cf_form_init(struct cf_form *form,
 			     enum cf_form_type type,
-			     struct cf_thread *t) {
+			     struct cf_thread *thread) {
   form->type = type;
 
   switch (type) {
   case CF_PARAMS:
-    c7_deque_init(&form->as_params, &t->form_pool);
+    c7_deque_init(&form->as_params, &thread->form_pool);
     break;
   default:
     break;

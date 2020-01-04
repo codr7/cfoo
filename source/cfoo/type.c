@@ -1,7 +1,10 @@
+#include <codr7/compare.h>
+
+#include "cfoo/binding.h"
 #include "cfoo/id.h"
 #include "cfoo/thread.h"
 #include "cfoo/type.h"
-#include "codr7/compare.h"
+#include "cfoo/value.h"
 
 struct cf_type *cf_type_init(struct cf_type *type,
 			     struct cf_thread *thread,
@@ -27,4 +30,17 @@ void cf_type_deref(struct cf_type *type) {
   if (!--type->ref_count) {
     c7_rbtree_remove(&type->thread->types, type->id);
   }
+}
+
+struct cf_type *cf_add_type(struct cf_thread *thread, const struct cf_id *id) {
+  struct cf_type *t =
+    cf_type_init(c7_rbtree_add(&thread->types, id), thread, id);
+
+  cf_value_init(&cf_binding_init(c7_rbtree_add(&thread->bindings, id),
+				 &thread->bindings,
+				 id)->value,
+		thread->meta_type ? thread->meta_type : t)->as_meta =
+    cf_type_ref(t);
+  
+  return t;
 }
