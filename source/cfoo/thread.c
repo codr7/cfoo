@@ -22,12 +22,12 @@ static enum c7_order compare_binding(const void *key, const void *value) {
 
 static struct cf_type *add_type(struct cf_thread *t, const char *name) {
   struct cf_id *id = cf_id(t, name);
-  struct cf_type *type = cf_type_init(c7_rbtree_add(&t->types, id), id);
+  struct cf_type *type = cf_type_init(c7_rbtree_add(&t->types, id), t, id);
 
   cf_value_init(&cf_binding_init(c7_rbtree_add(&t->bindings, id),
 				 &t->bindings,
 				 id)->value,
-		t->meta_type ? t->meta_type : type)->as_meta = type;
+		t->meta_type ? t->meta_type : type)->as_meta = cf_type_ref(type);
   
   return type;
 }
@@ -37,8 +37,13 @@ static struct cf_type *add_int64_type(struct cf_thread *t) {
   return type;
 }
 
+static void deinit_meta(struct cf_value *v) {
+  cf_type_deref(v->as_meta);
+}
+
 static struct cf_type *add_meta_type(struct cf_thread *t) {
   struct cf_type *type = add_type(t, "Meta");
+  type->deinit_value = deinit_meta;
   return type;
 }
 
@@ -85,7 +90,7 @@ static bool deinit_id(void *id, void *_) {
 }
 
 static bool deinit_type(void *type, void *_) {
-  cf_type_deinit(type);
+  cf_type_deref(type);
   return true;
 }
 
