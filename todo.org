@@ -1,2 +1,3 @@
-* Time type based on struct timespec
+* make cf_id pointers const
+* implement methods for types in thread
 * cf_function

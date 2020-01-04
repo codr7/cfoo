@@ -24,9 +24,12 @@ struct cf_thread {
   struct c7_rbpool type_pool;
   struct c7_rbtree types;
 
+  struct c7_rbpool binding_pool;
+  struct c7_rbtree bindings;
+
   struct c7_chan chan;
-  
-  struct cf_type *int64_type;
+
+  struct cf_type *int64_type, *meta_type, *time_type;
 };
 
 struct cf_thread *cf_thread_new();

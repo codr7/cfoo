@@ -15,6 +15,11 @@ void cf_id_deinit(struct cf_id *id) {
   free(id->name);
 }
 
+enum c7_order cf_id_compare(const struct cf_id *x,
+			    const struct cf_id *y) {
+  return c7_compare_str(x->name, y->name);
+}
+
 bool cf_id_char(char c) {
   return isalpha(c);
 }
@@ -22,8 +27,4 @@ bool cf_id_char(char c) {
 struct cf_id *cf_id(struct cf_thread *t, const char *name) {
   struct cf_id *id = c7_rbtree_find(&t->ids, name);
   return id ? id : cf_id_init(c7_rbtree_add(&t->ids, name), name);
-}
-
-enum c7_order cf_id_compare(const void *key, const void *value) {
-  return c7_compare_str(key, ((const struct cf_id *)value)->name);
 }
