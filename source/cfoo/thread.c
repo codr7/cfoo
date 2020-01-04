@@ -21,7 +21,7 @@ static enum c7_order compare_binding(const void *key, const void *value) {
 }
 
 static struct cf_type *add_type(struct cf_thread *t, const char *name) {
-  struct cf_id *id = cf_id(t, name);
+  const struct cf_id *id = cf_id(t, name);
   struct cf_type *type = cf_type_init(c7_rbtree_add(&t->types, id), t, id);
 
   cf_value_init(&cf_binding_init(c7_rbtree_add(&t->bindings, id),

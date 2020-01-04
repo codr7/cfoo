@@ -10,7 +10,7 @@ struct cf_value;
 
 struct cf_type {
   struct cf_thread *thread;
-  struct cf_id *id;
+  const struct cf_id *id;
   uint16_t ref_count;
   
   enum c7_order (*compare_values)(const struct cf_value *x,
@@ -22,7 +22,7 @@ struct cf_type {
 
 struct cf_type *cf_type_init(struct cf_type *type,
 			     struct cf_thread *thread,
-			     struct cf_id *id);
+			     const struct cf_id *id);
 
 struct cf_type *cf_type_ref(struct cf_type *type);
 void cf_type_deref(struct cf_type *type);

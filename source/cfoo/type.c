@@ -5,7 +5,7 @@
 
 struct cf_type *cf_type_init(struct cf_type *type,
 			     struct cf_thread *thread,
-			     struct cf_id *id) {
+			     const struct cf_id *id) {
   type->thread = thread;
   type->id = id;
   type->ref_count = 1;

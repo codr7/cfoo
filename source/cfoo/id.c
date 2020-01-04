@@ -24,7 +24,7 @@ bool cf_id_char(char c) {
   return isalpha(c);
 }
 
-struct cf_id *cf_id(struct cf_thread *t, const char *name) {
+const struct cf_id *cf_id(struct cf_thread *t, const char *name) {
   struct cf_id *id = c7_rbtree_find(&t->ids, name);
   return id ? id : cf_id_init(c7_rbtree_add(&t->ids, name), name);
 }

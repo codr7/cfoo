@@ -14,7 +14,7 @@ struct cf_form {
   enum cf_form_type type;
   
   union {
-    struct cf_id *as_id;
+    const struct cf_id *as_id;
     struct c7_deque as_params;
     struct cf_value as_value;
   };
