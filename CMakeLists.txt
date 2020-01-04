@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.5)
 
 project(cfoo)
-add_compile_options(-std=c11 -Wall -Werror -O2 -g)
+add_compile_options(-std=c11 -Wall -Werror)
 
 file(GLOB_RECURSE sources source/cfoo/*.c)
 
@@ -11,7 +11,7 @@ target_include_directories(lib_static PUBLIC source/)
 target_link_libraries(lib_static codr7)
 
 add_executable(tests ${sources} source/tests.c)
-add_compile_options(tests -fsanitize=undefined)
+target_compile_options(tests PUBLIC -O2 -g -fsanitize=undefined)
 target_include_directories(tests PUBLIC source/)
 target_link_libraries(tests codr7 pthread ubsan)
 
