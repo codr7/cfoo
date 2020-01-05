@@ -23,6 +23,7 @@ static const char *skip(const char *in, struct cf_point *point) {
       in++;
       point->line++;
       point->column = CF_MIN_COLUMN;
+      break;
     default:
       return in;
     }
@@ -35,7 +36,7 @@ const char *cf_parse(struct cf_thread *thread,
 		     struct c7_deque *out) {
   do {
     in = cf_parse_form(thread, skip(in, point), point, out);
-  } while (*in && cf_ok(thread));
+  } while (in && *in && cf_ok(thread));
 
   return in;
 }

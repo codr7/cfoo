@@ -56,7 +56,7 @@ static struct cf_type *add_time_type(struct cf_thread *thread) {
 
 struct cf_thread *cf_thread_new() {
   struct cf_thread *t = malloc(sizeof(struct cf_thread));
-  t->debug = true;
+  t->debug = false;
 
   c7_dqpool_init(&t->error_pool, CF_SLAB_SIZE, sizeof(struct cf_error));
   c7_deque_init(&t->errors, &t->error_pool);

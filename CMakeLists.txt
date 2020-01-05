@@ -5,6 +5,11 @@ add_compile_options(-std=c11 -Wall -Werror)
 
 file(GLOB_RECURSE sources source/cfoo/*.c)
 
+add_executable(cfoo ${sources} source/main.c)
+target_compile_options(cfoo PUBLIC -O2 -g -fsanitize=undefined)
+target_include_directories(cfoo PUBLIC source/)
+target_link_libraries(cfoo codr7 pthread ubsan)
+
 add_library(lib_static STATIC ${sources})
 set_target_properties(lib_static PROPERTIES OUTPUT_NAME cfoo)
 target_include_directories(lib_static PUBLIC source/)
