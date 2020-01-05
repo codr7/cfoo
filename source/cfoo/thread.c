@@ -5,6 +5,7 @@
 #include "cfoo/form.h"
 #include "cfoo/id.h"
 #include "cfoo/method.h"
+#include "cfoo/op.h"
 #include "cfoo/thread.h"
 #include "cfoo/type.h"
 
@@ -54,6 +55,16 @@ static struct cf_type *add_time_type(struct cf_thread *thread) {
   return type;
 }
 
+static bool debug_imp(struct cf_thread *thread, struct cf_point point) {
+  thread->debug = !thread->debug;
+  
+  printf("Debug %s in %s, line %" PRId16 ", column %" PRId16 "\n",
+	 thread->debug ? "enabled" : "disabled",
+	 point.file->name, point.line, point.column);
+
+  return true;
+}
+
 struct cf_thread *cf_thread_new() {
   struct cf_thread *t = malloc(sizeof(struct cf_thread));
   t->debug = false;
@@ -75,6 +86,7 @@ struct cf_thread *cf_thread_new() {
   c7_rbpool_init(&t->binding_pool, CF_SLAB_SIZE, sizeof(struct cf_binding));
   c7_rbtree_init(&t->bindings, compare_binding, &t->binding_pool);
 
+  c7_dqpool_init(&t->op_pool, CF_SLAB_SIZE, sizeof(struct cf_op));
   c7_chan_init(&t->chan, CF_SLAB_SIZE, sizeof(struct cf_value), 0);
 
   t->meta_type = NULL;
@@ -82,12 +94,16 @@ struct cf_thread *cf_thread_new() {
   t->method_type = add_method_type(t);
   t->int64_type = add_int64_type(t);
   t->time_type = add_time_type(t);
+
+  cf_add_method(t, cf_id(t, "debug"))->imp = debug_imp;
+  
   return t;
 }
 
 void cf_thread_free(struct cf_thread *thread) {
   c7_chan_deinit(&thread->chan);
-  
+  c7_dqpool_deinit(&thread->op_pool);
+
   c7_rbtree_do(&thread->bindings, b) {
     cf_binding_deinit(b);
   }

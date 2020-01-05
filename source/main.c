@@ -1,6 +1,7 @@
 #include <codr7/stream.h>
 #include <stdio.h>
 
+#include "cfoo/code.h"
 #include "cfoo/config.h"
 #include "cfoo/error.h"
 #include "cfoo/id.h"
@@ -19,11 +20,14 @@ static void repl(struct cf_thread *thread) {
 
   struct c7_deque forms;
   c7_deque_init(&forms, &thread->form_pool);
+
+  struct cf_code code;
+  cf_code_init(&code, thread);
   
-  for (;;) {
+  while (!feof(stdin)) {
     printf("  ");
     char *l = c7_stream_getline(&in, stdin);
-    
+
     if (!l || l[0] == '\n') {
       if (!l || in.length == 1) {
 	break;
@@ -34,6 +38,14 @@ static void repl(struct cf_thread *thread) {
 
       cf_parse(thread, in.data, &p, &forms);
 
+      if (cf_ok(thread)) {
+	cf_compile(&forms, &thread->bindings, &code);
+      }
+
+      if (cf_ok(thread)) {
+	cf_eval(&code);
+      }
+      
       if (!cf_ok(thread)) {
 	c7_deque_do(&thread->errors, _e) {
 	  struct cf_error *e = _e;
@@ -44,6 +56,7 @@ static void repl(struct cf_thread *thread) {
 	c7_deque_clear(&thread->errors);
       }
 
+      cf_code_clear(&code);
       c7_deque_clear(&forms);
       c7_stream_reset(&in);
     }

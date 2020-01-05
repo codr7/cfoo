@@ -10,6 +10,7 @@ struct cf_method *cf_method_init(struct cf_method *method,
 				 const struct cf_id *id) {
   method->thread = thread;
   method->id = id;
+  method->imp = NULL;
   method->ref_count = 1;
   return method;
 }
@@ -39,4 +40,8 @@ struct cf_method *cf_add_method(struct cf_thread *thread,
 		thread->method_type)->as_method = cf_method_ref(m);
   
   return m;
+}
+
+bool cf_call(struct cf_method *method, struct cf_point point) {
+  return method->imp(method->thread, point);
 }

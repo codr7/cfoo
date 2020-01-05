@@ -4,9 +4,11 @@
 
 struct cf_form *cf_form_init(struct cf_form *form,
 			     enum cf_form_type type,
+			     struct cf_point point,
 			     struct cf_thread *thread) {
   form->type = type;
-
+  form->point = point;
+  
   switch (type) {
   case CF_GROUP:
     c7_deque_init(&form->as_group, &thread->form_pool);

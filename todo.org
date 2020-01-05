@@ -1,5 +1,8 @@
 * implement type methods in thread
-* add cf_method.params
-** add cf_param
-*** optional id & value
-* add cf_code with ops
+* add cf_thread.stack
+** add cf_push/pop
+** add CF_PUSH op
+*** compile nums/vars
+* add cf_method.args
+** add cf_method_arg
+

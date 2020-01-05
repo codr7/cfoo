@@ -4,16 +4,22 @@
 #include <inttypes.h>
 #include <stdbool.h>
 
-#define cf_error(thread, point, code, spec, ...)			\
-  _cf_error(thread,								\
+#include "cfoo/id.h"
+
+#define cf_error(thread, point, code, spec, ...) ({			\
+  struct cf_point _point = point;					\
+  _cf_error(thread,							\
 	    __FILE__, __LINE__,						\
 	    code,							\
-	    "Error in %s, line %" PRId16 ", column %" PRId16 "\n" spec,	\
-	    "n/a", (point).line, (point).column, ## __VA_ARGS__, NULL)
+	    "Error in %s, line %" PRId16 ", column %" PRId16 "\n"	\
+	    spec,							\
+	    (_point).file->name, (_point).line, (_point).column,	\
+	    ## __VA_ARGS__, NULL);					\
+  })
 
 struct cf_thread;
 
-enum cf_error_code {CF_ESYNTAX};
+enum cf_error_code {CF_ESYNTAX, CF_EUNKNOWN};
 
 struct cf_error {
   enum cf_error_code code;  
