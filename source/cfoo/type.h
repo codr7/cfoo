@@ -24,6 +24,8 @@ struct cf_type *cf_type_init(struct cf_type *type,
 			     struct cf_thread *thread,
 			     const struct cf_id *id);
 
+void cf_type_deinit(struct cf_type *type);
+
 struct cf_type *cf_type_ref(struct cf_type *type);
 void cf_type_deref(struct cf_type *type);
 

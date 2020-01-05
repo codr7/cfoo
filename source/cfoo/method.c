@@ -14,6 +14,8 @@ struct cf_method *cf_method_init(struct cf_method *method,
   return method;
 }
 
+void cf_method_deinit(struct cf_method *method) {}
+
 struct cf_method *cf_method_ref(struct cf_method *method) {
   method->ref_count++;
   return method;
@@ -21,6 +23,7 @@ struct cf_method *cf_method_ref(struct cf_method *method) {
 
 void cf_method_deref(struct cf_method *method) {
   if (!--method->ref_count) {
+    cf_method_deinit(method);
     c7_rbtree_remove(&method->thread->methods, method->id);
   }
 }

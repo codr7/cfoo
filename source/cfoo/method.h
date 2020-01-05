@@ -13,6 +13,8 @@ struct cf_method *cf_method_init(struct cf_method *method,
 				 struct cf_thread *thread,
 				 const struct cf_id *id);
 
+void cf_method_deinit(struct cf_method *method);
+
 struct cf_method *cf_method_ref(struct cf_method *method);
 void cf_method_deref(struct cf_method *method);
 

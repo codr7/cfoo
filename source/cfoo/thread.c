@@ -85,42 +85,34 @@ struct cf_thread *cf_thread_new() {
   return t;
 }
 
-static bool deinit_binding(void *type, void *_) {
-  cf_value_deinit(&((struct cf_binding *)type)->value);
-  return true;
-}
-
-static bool deinit_id(void *id, void *_) {
-  cf_id_deinit(id);
-  return true;
-}
-
-static bool deinit_method(void *method, void *_) {
-  cf_method_deref(method);
-  return true;
-}
-
-static bool deinit_type(void *type, void *_) {
-  cf_type_deref(type);
-  return true;
-}
-
 void cf_thread_free(struct cf_thread *thread) {
   c7_chan_deinit(&thread->chan);
   
-  c7_rbtree_while(&thread->bindings, deinit_binding, NULL);
+  c7_rbtree_do(&thread->bindings, b) {
+    cf_binding_deinit(b);
+  }
+  
   c7_rbtree_clear(&thread->bindings);
   c7_rbpool_deinit(&thread->binding_pool);
 
-  c7_rbtree_while(&thread->methods, deinit_method, NULL);
+  c7_rbtree_do(&thread->methods, m) {
+    cf_method_deinit(m);
+  }
+  
   c7_rbtree_clear(&thread->methods);
   c7_rbpool_deinit(&thread->method_pool);
 
-  c7_rbtree_while(&thread->types, deinit_type, NULL);
+  c7_rbtree_do(&thread->types, t) {
+    cf_type_deinit(t);
+  }
+  
   c7_rbtree_clear(&thread->types);
   c7_rbpool_deinit(&thread->type_pool);
   
-  c7_rbtree_while(&thread->ids, deinit_id, NULL);
+  c7_rbtree_do(&thread->ids, id) {
+    cf_id_deinit(id);
+  }
+  
   c7_rbtree_clear(&thread->ids);
   c7_rbpool_deinit(&thread->id_pool);
 

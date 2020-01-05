@@ -21,6 +21,8 @@ struct cf_type *cf_type_init(struct cf_type *type,
   return type;
 }
 
+void cf_type_deinit(struct cf_type *type) {}
+
 struct cf_type *cf_type_ref(struct cf_type *type) {
   type->ref_count++;
   return type;
@@ -28,6 +30,7 @@ struct cf_type *cf_type_ref(struct cf_type *type) {
 
 void cf_type_deref(struct cf_type *type) {
   if (!--type->ref_count) {
+    cf_type_deinit(type);
     c7_rbtree_remove(&type->thread->types, type->id);
   }
 }

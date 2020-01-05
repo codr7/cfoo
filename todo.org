@@ -1,4 +1,6 @@
+* replace rbtree_while with do
+* implement type methods in thread
 * add cf_method.params
 ** add cf_param
 *** optional id & value
-* implement type methods in thread
+* add cf_code with ops
