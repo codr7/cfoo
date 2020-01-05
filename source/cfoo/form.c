@@ -8,8 +8,8 @@ struct cf_form *cf_form_init(struct cf_form *form,
   form->type = type;
 
   switch (type) {
-  case CF_PARAMS:
-    c7_deque_init(&form->as_params, &thread->form_pool);
+  case CF_GROUP:
+    c7_deque_init(&form->as_group, &thread->form_pool);
     break;
   default:
     break;
@@ -20,8 +20,8 @@ struct cf_form *cf_form_init(struct cf_form *form,
 
 void cf_form_deinit(struct cf_form *form) {
   switch (form->type) {
-  case CF_PARAMS:
-    cf_clear_forms(&form->as_params);
+  case CF_GROUP:
+    cf_clear_forms(&form->as_group);
     break;
   case CF_VALUE:
     cf_value_deinit(&form->as_value);

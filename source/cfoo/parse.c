@@ -51,7 +51,7 @@ const char *cf_parse_form(struct cf_thread *thread,
   case 0:
     return in;
   case '(':
-    return cf_parse_params(thread, in, point, out);
+    return cf_parse_group(thread, in, point, out);
   default:
     if (cf_id_char(c)) {
       return cf_parse_id(thread, in, point, out);
@@ -156,20 +156,20 @@ const char *cf_parse_num(struct cf_thread *thread,
   return in;
 }
 
-const char *cf_parse_params(struct cf_thread *thread,
-			    const char *in,
-			    struct cf_point *point,
-			    struct c7_deque *out) {
+const char *cf_parse_group(struct cf_thread *thread,
+			   const char *in,
+			   struct cf_point *point,
+			   struct c7_deque *out) {
   char c = *in;
   
   if (c != '(') {
-    cf_error(thread, *point, CF_ESYNTAX, "Invalid params: %c (%d)", c, (int)c);
+    cf_error(thread, *point, CF_ESYNTAX, "Invalid group: %c (%d)", c, (int)c);
     return NULL;
   }
 
   in++;
   point->column++;
-  struct cf_form *f = cf_form_init(c7_deque_push_back(out), CF_PARAMS, thread);
+  struct cf_form *f = cf_form_init(c7_deque_push_back(out), CF_GROUP, thread);
   
   do {
     in = skip(in, point);
@@ -179,9 +179,9 @@ const char *cf_parse_params(struct cf_thread *thread,
       return ++in;
     }
 
-    in = cf_parse_form(thread, in, point, &f->as_params);
+    in = cf_parse_form(thread, in, point, &f->as_group);
   } while (*in && cf_ok(thread));
   
-  cf_error(thread, *point, CF_ESYNTAX, "Open params");
+  cf_error(thread, *point, CF_ESYNTAX, "Open group");
   return NULL;
 }

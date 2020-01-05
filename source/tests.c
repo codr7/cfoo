@@ -38,8 +38,8 @@ static void parse_tests(struct cf_thread *t) {
   assert(cf_ok(t));
   assert(out.count == 1);
   struct cf_form *f = c7_deque_back(&out);
-  assert(f->type = CF_PARAMS);
-  assert(f->as_params.count == 3);
+  assert(f->type = CF_GROUP);
+  assert(f->as_group.count == 3);
   assert(p.line == CF_MIN_LINE && p.column == 13);
   cf_clear_forms(&out);
 }

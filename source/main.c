@@ -31,6 +31,7 @@ static void repl(struct cf_thread *thread) {
       
       struct cf_point p = cf_point(cf_id(thread, "repl"), 
 				   CF_MIN_LINE, CF_MIN_COLUMN);
+
       cf_parse(thread, in.data, &p, &forms);
 
       if (!cf_ok(thread)) {

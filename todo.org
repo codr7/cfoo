@@ -1,5 +1,3 @@
-* parse input in repl
-* -- commit
 * implement type methods in thread
 * add cf_method.params
 ** add cf_param
