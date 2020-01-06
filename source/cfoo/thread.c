@@ -65,7 +65,7 @@ static bool meta_dump(struct cf_thread *thread,
 		      const struct cf_point *point,
 		      const struct cf_value *v,
 		      FILE *out) {
-  printf("%s", v->as_meta->id->name);
+  printf("Type(%s)", v->as_meta->id->name);
   return true;
 }
 
@@ -95,7 +95,7 @@ static bool method_dump(struct cf_thread *thread,
 		        const struct cf_point *point,
 		        const struct cf_value *v,
 			FILE *out) {
-  printf("%s", v->as_method->id->name);
+  printf("Method(%s)", v->as_method->id->name);
   return true;
 }
 
@@ -132,7 +132,7 @@ static bool time_dump(struct cf_thread *thread,
 
   char buf[20];
 
-  if (!strftime(buf, sizeof(buf), "Y-m-d H:M:S", t)) {
+  if (!strftime(buf, sizeof(buf), "Time(Y-m-d H:M:S)", t)) {
     cf_error(thread, point, CF_ERUNTIME, "Failed formatting time: %d", errno);
     return false;
   }

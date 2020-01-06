@@ -33,7 +33,7 @@ static void parse_tests(struct cf_thread *t) {
   assert(p.line == CF_MIN_LINE && p.column == 16);
   cf_clear_forms(&out);
 
-  p = cf_point(cf_id(t, "param test"), CF_MIN_LINE, CF_MIN_COLUMN);
+  p = cf_point(cf_id(t, "group test"), CF_MIN_LINE, CF_MIN_COLUMN);
   assert(!*cf_parse(t, "(foo bar baz)", &p, &out));
   assert(cf_ok(t));
   assert(out.count == 1);
@@ -41,6 +41,16 @@ static void parse_tests(struct cf_thread *t) {
   assert(f->type = CF_GROUP);
   assert(f->as_group.count == 3);
   assert(p.line == CF_MIN_LINE && p.column == 13);
+  cf_clear_forms(&out);
+
+  p = cf_point(cf_id(t, "group test"), CF_MIN_LINE, CF_MIN_COLUMN);
+  assert(!*cf_parse(t, "foo(bar baz)", &p, &out));
+  assert(cf_ok(t));
+  assert(out.count == 1);
+  f = c7_deque_back(&out);
+  assert(f->type = CF_GROUP);
+  assert(f->as_group.count == 3);
+  assert(p.line == CF_MIN_LINE && p.column == 12);
   cf_clear_forms(&out);
 }
 

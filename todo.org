@@ -1,6 +1,3 @@
-* parse x(...) as (x ...)
-** catch in parse_id
-** add test
 * add cf_thread.stack
 ** add cf_push/pop
 ** add CF_PUSH op
