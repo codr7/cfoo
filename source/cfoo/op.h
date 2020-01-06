@@ -1,6 +1,7 @@
 #ifndef CFOO_OP_H
 #define CFOO_OP_H
 
+#include "cfoo/point.h"
 #include "cfoo/value.h"
 
 struct cf_method;

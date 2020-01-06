@@ -4,8 +4,11 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#include "cfoo/point.h"
+#include "cfoo/arg.h"
+#include "cfoo/config.h"
+#include "cfoo/ret.h"
 
+struct cf_point;
 struct cf_thread;
 
 typedef bool (*cf_method_imp)(struct cf_thread *thread, const struct cf_point *);
@@ -13,6 +16,11 @@ typedef bool (*cf_method_imp)(struct cf_thread *thread, const struct cf_point *)
 struct cf_method {
   struct cf_thread *thread;
   const struct cf_id *id;
+
+  struct cf_arg args[CF_MAX_ARGS];
+  struct cf_ret rets[CF_MAX_RETS];
+  uint8_t arg_count, ret_count;
+  
   cf_method_imp imp;
   uint16_t ref_count;
 };

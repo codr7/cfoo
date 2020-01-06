@@ -176,6 +176,14 @@ static struct cf_type *add_time_type(struct cf_thread *thread) {
   return t;
 }
 
+static bool is_imp(struct cf_thread *thread, const struct cf_point *point) {
+  struct cf_value x = cf_pop(thread), y = cf_pop(thread);
+  cf_value_init(cf_push(thread), thread->bool_type)->as_bool = cf_is(&x, &y);
+  cf_value_deinit(&x);
+  cf_value_deinit(&y);
+  return true;
+}
+
 static bool debug_imp(struct cf_thread *thread, const struct cf_point *point) {
   thread->debug = !thread->debug;
   
@@ -225,13 +233,18 @@ struct cf_thread *cf_thread_new() {
 
   t->meta_type = NULL;
   t->meta_type = add_meta_type(t);
+  t->a_type = cf_add_type(t, cf_id(t, "A"));
   t->method_type = add_method_type(t);
   t->int64_type = add_int64_type(t);
   t->time_type = add_time_type(t);
 
+  cf_add_method(t, cf_id(t, "=="),
+		cf_args(cf_arg_type(cf_id(t, "x"), t->a_type),
+			cf_arg_index(cf_id(t, "y"), 0)),
+		cf_rets(cf_ret_index(0)))->imp = is_imp;
+
   cf_add_method(t, cf_id(t, "debug"))->imp = debug_imp;
   cf_add_method(t, cf_id(t, "now"))->imp = now_imp;
-  
   return t;
 }
 

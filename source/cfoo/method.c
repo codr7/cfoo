@@ -10,6 +10,7 @@ struct cf_method *cf_method_init(struct cf_method *method,
 				 const struct cf_id *id) {
   method->thread = thread;
   method->id = id;
+  method->arg_count = method->ret_count = 0;
   method->imp = NULL;
   method->ref_count = 1;
   return method;

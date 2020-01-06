@@ -1,4 +1,5 @@
 * add cf_method.args/rets
-* add dump method
-* add ==/is method
+** finish ==/is
+** delay call op in compile until enough args
+*** keep count of forms per compile
 * add =, !=, <, >, <=, >= methods
