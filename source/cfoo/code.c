@@ -35,7 +35,8 @@ static void id_compile(struct cf_value *value,
       (struct cf_call_op){.method = cf_method_ref(value->as_method),
 			  .point = *point};  
   } else {
-    abort();
+    cf_copy(&cf_op_init(c7_deque_push_back(&out->ops), CF_PUSH)->as_push.value,
+	    value);
   }
 }
 
@@ -46,6 +47,11 @@ void cf_compile(struct c7_deque *in,
     struct cf_form *f = c7_deque_front(in);
 
     switch (f->type) {
+    case CF_GROUP:
+      cf_compile(&f->as_group, bindings, out);
+      cf_form_deinit(f);
+      c7_deque_pop_front(in);
+      break;
     case CF_ID: {
       struct cf_binding *b = c7_rbtree_find(bindings, f->as_id);
       
@@ -61,6 +67,13 @@ void cf_compile(struct c7_deque *in,
       c7_deque_pop_front(in);
       break;
     }
+    case CF_VALUE:
+      cf_copy(&cf_op_init(c7_deque_push_back(&out->ops), CF_PUSH)->as_push.value,
+	      &f->as_value);
+      
+      cf_form_deinit(f);
+      c7_deque_pop_front(in);
+      break;
     default:
       abort();
     }

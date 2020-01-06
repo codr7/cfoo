@@ -2,6 +2,7 @@
 
 #include "cfoo/method.h"
 #include "cfoo/op.h"
+#include "cfoo/thread.h"
 
 struct cf_op *cf_op_init(struct cf_op *op, enum cf_op_type type) {
   op->type = type;
@@ -13,20 +14,29 @@ void cf_op_deinit(struct cf_op *op) {
   case CF_CALL:
     cf_method_deref(op->as_call.method);
     break;
+  case CF_PUSH:
+    cf_value_deinit(&op->as_push.value);
+    break;
   default:
     break;
   }
 }
 
-bool call_eval(struct cf_call_op *op) {
+static bool call_eval(struct cf_call_op *op) {
   return cf_call(op->method, &op->point);
+}
+
+static bool push_eval(struct cf_push_op *op, struct cf_thread *thread) {
+  cf_copy(cf_push(thread), &op->value);
+  return true;
 }
 
 bool cf_op_eval(struct cf_op *op, struct cf_thread *thread) {
   switch(op->type) {
   case CF_CALL:
     return call_eval(&op->as_call);
-    break;
+  case CF_PUSH:
+    return push_eval(&op->as_push, thread);
   default:
     abort();
   }

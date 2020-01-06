@@ -33,10 +33,10 @@ static void repl(struct cf_thread *thread) {
 	break;
       }
       
-      struct cf_point p = cf_point(cf_id(thread, "repl"), 
-				   CF_MIN_LINE, CF_MIN_COLUMN);
+      struct cf_point point = cf_point(cf_id(thread, "repl"), 
+				       CF_MIN_LINE, CF_MIN_COLUMN);
 
-      cf_parse(thread, in.data, &p, &forms);
+      cf_parse(thread, in.data, &point, &forms);
 
       if (cf_ok(thread)) {
 	cf_compile(&forms, &thread->bindings, &code);
@@ -56,6 +56,9 @@ static void repl(struct cf_thread *thread) {
 	c7_deque_clear(&thread->errors);
       }
 
+      cf_dump_stack(thread, &point, stdout);
+      fputs("\n\n", stdout);
+      
       cf_code_clear(&code);
       c7_deque_clear(&forms);
       c7_stream_reset(&in);

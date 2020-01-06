@@ -13,21 +13,26 @@ void cf_value_deinit(struct cf_value *value) {
   }
 }
 
-enum c7_order cf_value_compare(const struct cf_value *x,
-			       const struct cf_value *y) {
+enum c7_order cf_compare(const struct cf_value *x,
+			 const struct cf_value *y) {
   return (x->type == y->type)
     ? x->type->compare_value(x, y)
     : cf_id_compare(x->type->id, y->type->id);
 }
 
-bool cf_value_dump(struct cf_thread *thread,
+void cf_copy(struct cf_value *dst, struct cf_value *src) {
+  dst->type = src->type;
+  src->type->copy_value(dst, src);
+}
+
+bool cf_dump(struct cf_thread *thread,
 		   const struct cf_point *point,
 		   const struct cf_value *v,
 		   FILE *out) {
   return v->type->dump_value(thread, point, v, out);
 }
   
-bool cf_value_is(const struct cf_value *x, const struct cf_value *y) {
+bool cf_is(const struct cf_value *x, const struct cf_value *y) {
   return x->type == y->type && x->type->is_value(x, y);
 }
 

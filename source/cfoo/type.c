@@ -14,6 +14,7 @@ struct cf_type *cf_type_init(struct cf_type *type,
   type->ref_count = 1;
   
   type->compare_value = NULL;
+  type->copy_value = NULL;
   type->deinit_value = NULL;
   type->dump_value = NULL;
   type->is_value = NULL;

@@ -27,6 +27,7 @@ void cf_form_deinit(struct cf_form *form) {
     break;
   case CF_VALUE:
     cf_value_deinit(&form->as_value);
+    break;
   default:
     break;
   }

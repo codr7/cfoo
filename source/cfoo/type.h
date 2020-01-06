@@ -13,9 +13,11 @@ struct cf_type {
   struct cf_thread *thread;
   const struct cf_id *id;
   uint16_t ref_count;
-  
+
   enum c7_order (*compare_value)(const struct cf_value *x,
 				 const struct cf_value *y);
+
+  void (*copy_value)(struct cf_value *dst, struct cf_value *src);
   void (*deinit_value)(struct cf_value *v);
   
   bool (*dump_value)(struct cf_thread *thread,

@@ -1,7 +1,4 @@
-* add cf_thread.stack
-** add cf_push/pop
-** add CF_PUSH op
-*** compile nums/vars
-** dump stack after eval in repl
-* add now method
 * add cf_method.args/rets
+* add dump method
+* add ==/is method
+* add =, !=, <, >, <=, >= methods
