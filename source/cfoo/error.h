@@ -19,7 +19,7 @@
 
 struct cf_thread;
 
-enum cf_error_code {CF_ESYNTAX, CF_EUNKNOWN};
+enum cf_error_code {CF_ERUNTIME, CF_ESYNTAX, CF_EUNKNOWN};
 
 struct cf_error {
   enum cf_error_code code;  

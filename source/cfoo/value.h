@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include <time.h>
 
+struct cf_point;
 struct cf_thread;
 
 struct cf_value {
@@ -26,7 +27,11 @@ void cf_value_deinit(struct cf_value *value);
 enum c7_order cf_value_compare(const struct cf_value *x,
 			       const struct cf_value *y);
 
-void cf_value_dump(const struct cf_value *v, FILE *out);
+bool cf_value_dump(struct cf_thread *thread,
+		   const struct cf_point *point,
+		   const struct cf_value *v,
+		   FILE *out);
+
 bool cf_value_is(const struct cf_value *x, const struct cf_value *y);
 
 #endif

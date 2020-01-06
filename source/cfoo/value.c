@@ -16,12 +16,15 @@ void cf_value_deinit(struct cf_value *value) {
 enum c7_order cf_value_compare(const struct cf_value *x,
 			       const struct cf_value *y) {
   return (x->type == y->type)
-    ? x->type->compare_values(x, y)
+    ? x->type->compare_value(x, y)
     : cf_id_compare(x->type->id, y->type->id);
 }
 
-void cf_value_dump(const struct cf_value *v, FILE *out) {
-  v->type->dump_value(v, out);
+bool cf_value_dump(struct cf_thread *thread,
+		   const struct cf_point *point,
+		   const struct cf_value *v,
+		   FILE *out) {
+  return v->type->dump_value(thread, point, v, out);
 }
   
 bool cf_value_is(const struct cf_value *x, const struct cf_value *y) {

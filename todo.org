@@ -1,8 +1,10 @@
-* implement type methods in thread
+* parse x(...) as (x ...)
+** catch in parse_id
+* grep/switch struct cf_point point to const *
 * add cf_thread.stack
 ** add cf_push/pop
 ** add CF_PUSH op
 *** compile nums/vars
-* add cf_method.args
-** add cf_method_arg
-
+** dump stack after eval in repl
+* add now method
+* add cf_method.args/rets

@@ -6,6 +6,7 @@
 #include <stdio.h>
 
 struct cf_id;
+struct cf_point;
 struct cf_value;
 
 struct cf_type {
@@ -13,10 +14,15 @@ struct cf_type {
   const struct cf_id *id;
   uint16_t ref_count;
   
-  enum c7_order (*compare_values)(const struct cf_value *x,
-				  const struct cf_value *y);
+  enum c7_order (*compare_value)(const struct cf_value *x,
+				 const struct cf_value *y);
   void (*deinit_value)(struct cf_value *v);
-  void (*dump_value)(const struct cf_value *v, FILE *out);
+  
+  bool (*dump_value)(struct cf_thread *thread,
+		     const struct cf_point *point,
+		     const struct cf_value *v,
+		     FILE *out);
+
   bool (*is_value)(const struct cf_value *x, const struct cf_value *y);
 };
 

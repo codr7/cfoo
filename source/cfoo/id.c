@@ -18,7 +18,7 @@ void cf_id_deinit(struct cf_id *id) {
 
 enum c7_order cf_id_compare(const struct cf_id *x,
 			    const struct cf_id *y) {
-  return c7_compare_str(x->name, y->name);
+  return c7_strcmp(x->name, y->name);
 }
 
 bool cf_id_char(char c) {
