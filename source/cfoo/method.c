@@ -42,6 +42,6 @@ struct cf_method *cf_add_method(struct cf_thread *thread,
   return m;
 }
 
-bool cf_call(struct cf_method *method, struct cf_point point) {
+bool cf_call(struct cf_method *method, const struct cf_point *point) {
   return method->imp(method->thread, point);
 }

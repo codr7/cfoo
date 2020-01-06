@@ -7,13 +7,13 @@
 #include "cfoo/id.h"
 
 #define cf_error(thread, point, code, spec, ...) ({			\
-  struct cf_point _point = point;					\
+  const struct cf_point *_point = point;				\
   _cf_error(thread,							\
 	    __FILE__, __LINE__,						\
 	    code,							\
 	    "Error in %s, line %" PRId16 ", column %" PRId16 "\n"	\
 	    spec,							\
-	    (_point).file->name, (_point).line, (_point).column,	\
+	    _point->file->name, _point->line, _point->column,		\
 	    ## __VA_ARGS__, NULL);					\
   })
 

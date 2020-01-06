@@ -126,14 +126,14 @@ static bool time_dump(struct cf_thread *thread,
   struct tm *t = gmtime(&v->as_time.tv_sec);
   
   if (!t) {
-    cf_error(thread, *point, CF_ERUNTIME, "Failed converting time: %d", errno);
+    cf_error(thread, point, CF_ERUNTIME, "Failed converting time: %d", errno);
     return false;
   }
 
   char buf[20];
 
   if (!strftime(buf, sizeof(buf), "Y-m-d H:M:S", t)) {
-    cf_error(thread, *point, CF_ERUNTIME, "Failed formatting time: %d", errno);
+    cf_error(thread, point, CF_ERUNTIME, "Failed formatting time: %d", errno);
     return false;
   }
   
@@ -153,12 +153,12 @@ static struct cf_type *add_time_type(struct cf_thread *thread) {
   return t;
 }
 
-static bool debug_imp(struct cf_thread *thread, struct cf_point point) {
+static bool debug_imp(struct cf_thread *thread, const struct cf_point *point) {
   thread->debug = !thread->debug;
   
   printf("Debug %s in %s, line %" PRId16 ", column %" PRId16 "\n",
 	 thread->debug ? "enabled" : "disabled",
-	 point.file->name, point.line, point.column);
+	 point->file->name, point->line, point->column);
 
   return true;
 }

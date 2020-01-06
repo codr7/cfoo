@@ -3,8 +3,8 @@
 
 #include <codr7/deque.h>
 
-#include <cfoo/point.h>
-#include <cfoo/value.h>
+#include "cfoo/point.h"
+#include "cfoo/value.h"
 
 struct cf_id;
 struct cf_thread;
@@ -24,7 +24,7 @@ struct cf_form {
 
 struct cf_form *cf_form_init(struct cf_form *form,
 			     enum cf_form_type type,
-			     struct cf_point point,
+			     const struct cf_point *point,
 			     struct cf_thread *thread);
 
 void cf_form_deinit(struct cf_form *form);

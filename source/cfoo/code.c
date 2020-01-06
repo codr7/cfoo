@@ -28,12 +28,12 @@ void cf_code_clear(struct cf_code *code) {
 }
 
 static void id_compile(struct cf_value *value,
-		       struct cf_point point,
+		       const struct cf_point *point,
 		       struct cf_code *out) {
   if (value->type == out->thread->method_type) {
     cf_op_init(c7_deque_push_back(&out->ops), CF_CALL)->as_call =
       (struct cf_call_op){.method = cf_method_ref(value->as_method),
-			  .point = point};  
+			  .point = *point};  
   } else {
     abort();
   }
@@ -50,9 +50,9 @@ void cf_compile(struct c7_deque *in,
       struct cf_binding *b = c7_rbtree_find(bindings, f->as_id);
       
       if (b) {
-	id_compile(&b->value, f->point, out);
+	id_compile(&b->value, &f->point, out);
       } else {
-	cf_error(out->thread, f->point,
+	cf_error(out->thread, &f->point,
 		 CF_EUNKNOWN,
 		 "Unknown id: %s", f->as_id->name);
       }

@@ -62,7 +62,7 @@ const char *cf_parse_form(struct cf_thread *thread,
     }
   }
   
-  cf_error(thread, *point, CF_ESYNTAX, "Unexpected char: %c (%d)", c, (int)c);
+  cf_error(thread, point, CF_ESYNTAX, "Unexpected char: %c (%d)", c, (int)c);
   return NULL;
 }
 
@@ -73,12 +73,12 @@ const char *cf_parse_group(struct cf_thread *thread,
   char c = *in;
   
   if (c != '(') {
-    cf_error(thread, *point, CF_ESYNTAX, "Invalid group: %c (%d)", c, (int)c);
+    cf_error(thread, point, CF_ESYNTAX, "Invalid group: %c (%d)", c, (int)c);
     return NULL;
   }
 
   struct cf_form *f =
-    cf_form_init(c7_deque_push_back(out), CF_GROUP, *point, thread);
+    cf_form_init(c7_deque_push_back(out), CF_GROUP, point, thread);
 
   in++;
   point->column++;
@@ -94,7 +94,7 @@ const char *cf_parse_group(struct cf_thread *thread,
     in = cf_parse_form(thread, in, point, &f->as_group);
   } while (*in && cf_ok(thread));
   
-  cf_error(thread, *point, CF_ESYNTAX, "Open group");
+  cf_error(thread, point, CF_ESYNTAX, "Open group");
   return NULL;
 }
 
@@ -115,7 +115,7 @@ const char *cf_parse_id(struct cf_thread *thread,
   name[l] = 0;
   strncpy(name, start, l);
 
-  cf_form_init(c7_deque_push_back(out), CF_ID, start_point, thread)->as_id =
+  cf_form_init(c7_deque_push_back(out), CF_ID, &start_point, thread)->as_id =
     cf_id(thread, name);
   
   return in;
@@ -171,7 +171,7 @@ const char *cf_parse_num(struct cf_thread *thread,
     int dv = char_int(c, base);
     
     if (dv == -1) {
-      cf_error(thread, *point, CF_ESYNTAX,
+      cf_error(thread, point, CF_ESYNTAX,
 	       "Invalid numeric char: %c (%d)", c, (int)c);
       
       return NULL;
@@ -184,7 +184,7 @@ const char *cf_parse_num(struct cf_thread *thread,
 
   cf_value_init(&cf_form_init(c7_deque_push_back(out),
 			      CF_VALUE,
-			      start_point,
+			      &start_point,
 			      thread)->as_value,
 		thread->int64_type)->as_int64 = v;
   

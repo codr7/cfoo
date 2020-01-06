@@ -8,7 +8,7 @@
 
 struct cf_thread;
 
-typedef bool (*cf_method_imp)(struct cf_thread *thread, struct cf_point);
+typedef bool (*cf_method_imp)(struct cf_thread *thread, const struct cf_point *);
 
 struct cf_method {
   struct cf_thread *thread;
@@ -29,6 +29,6 @@ void cf_method_deref(struct cf_method *method);
 struct cf_method *cf_add_method(struct cf_thread *thread,
 				const struct cf_id *id);
 
-bool cf_call(struct cf_method *method, struct cf_point point);
+bool cf_call(struct cf_method *method, const struct cf_point *point);
 
 #endif

@@ -19,7 +19,7 @@ void cf_op_deinit(struct cf_op *op) {
 }
 
 bool call_eval(struct cf_call_op *op) {
-  return cf_call(op->method, op->point);
+  return cf_call(op->method, &op->point);
 }
 
 bool cf_op_eval(struct cf_op *op, struct cf_thread *thread) {

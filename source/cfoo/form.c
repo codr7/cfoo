@@ -4,10 +4,10 @@
 
 struct cf_form *cf_form_init(struct cf_form *form,
 			     enum cf_form_type type,
-			     struct cf_point point,
+			     const struct cf_point *point,
 			     struct cf_thread *thread) {
   form->type = type;
-  form->point = point;
+  form->point = *point;
   
   switch (type) {
   case CF_GROUP:
