@@ -27,8 +27,36 @@ static enum c7_order compare_type(const void *key, const void *value) {
   return cf_id_compare(key, ((const struct cf_type *)value)->id);
 }
 
-static enum c7_order int64_compare(const struct cf_value *x,
-				   const struct cf_value *y) {
+static enum c7_order bool_compare(const struct cf_value *x, const struct cf_value *y) {
+  return c7_compare(x->as_bool, y->as_bool);
+}
+
+static void bool_copy(struct cf_value *dst, struct cf_value *src) {
+  dst->as_bool = src->as_bool;
+}
+
+static bool bool_dump(struct cf_thread *thread,
+		       const struct cf_point *point,
+		       const struct cf_value *v,
+		       FILE *out) {
+  printf("%c", v->as_bool ? 'T' : 'F');
+  return true;
+}
+
+static bool bool_is(const struct cf_value *x, const struct cf_value *y) {
+  return x->as_bool == y->as_bool;
+}
+
+static struct cf_type *add_bool_type(struct cf_thread *thread) {
+  struct cf_type *t = cf_add_type(thread, cf_id(thread, "Bool"));
+  t->copy_value = bool_copy;
+  t->compare_value = bool_compare;
+  t->dump_value = bool_dump;
+  t->is_value = bool_is;
+  return t;
+}
+
+static enum c7_order int64_compare(const struct cf_value *x, const struct cf_value *y) {
   return c7_compare(x->as_int64, y->as_int64);
 }
 
@@ -57,8 +85,7 @@ static struct cf_type *add_int64_type(struct cf_thread *thread) {
   return t;
 }
 
-static enum c7_order meta_compare(const struct cf_value *x,
-				  const struct cf_value *y) {
+static enum c7_order meta_compare(const struct cf_value *x, const struct cf_value *y) {
   return c7_compare(x->as_meta, y->as_meta);
 }
 
@@ -92,8 +119,7 @@ static struct cf_type *add_meta_type(struct cf_thread *thread) {
   return t;
 }
 
-static enum c7_order method_compare(const struct cf_value *x,
-				    const struct cf_value *y) {
+static enum c7_order method_compare(const struct cf_value *x, const struct cf_value *y) {
   return c7_compare(x->as_method, y->as_method);
 }
 
@@ -127,8 +153,7 @@ static struct cf_type *add_method_type(struct cf_thread *thread) {
   return t;
 }
 
-static enum c7_order time_compare(const struct cf_value *x,
-				  const struct cf_value *y) {
+static enum c7_order time_compare(const struct cf_value *x, const struct cf_value *y) {
   const struct timespec *xt = &x->as_time, *yt = &y->as_time;  
   enum c7_order sec = c7_compare(xt->tv_sec, yt->tv_sec);
   return (sec == C7_EQ) ? c7_compare(xt->tv_nsec, yt->tv_nsec) : sec;
@@ -177,7 +202,7 @@ static struct cf_type *add_time_type(struct cf_thread *thread) {
 }
 
 static bool is_imp(struct cf_thread *thread, const struct cf_point *point) {
-  struct cf_value x = cf_pop(thread), y = cf_pop(thread);
+  struct cf_value x = *cf_pop(thread), y = *cf_pop(thread);
   cf_value_init(cf_push(thread), thread->bool_type)->as_bool = cf_is(&x, &y);
   cf_value_deinit(&x);
   cf_value_deinit(&y);
@@ -234,17 +259,17 @@ struct cf_thread *cf_thread_new() {
   t->meta_type = NULL;
   t->meta_type = add_meta_type(t);
   t->a_type = cf_add_type(t, cf_id(t, "A"));
+  t->bool_type = add_bool_type(t);
   t->method_type = add_method_type(t);
   t->int64_type = add_int64_type(t);
   t->time_type = add_time_type(t);
 
-  cf_add_method(t, cf_id(t, "=="),
-		cf_args(cf_arg_type(cf_id(t, "x"), t->a_type),
-			cf_arg_index(cf_id(t, "y"), 0)),
-		cf_rets(cf_ret_index(0)))->imp = is_imp;
+  cf_add_method(t, cf_id(t, "=="), 2, 1,
+		cf_arg_type(cf_id(t, "x"), t->a_type), cf_arg_index(cf_id(t, "y"), 0),
+		cf_ret_type(t->meta_type))->imp = is_imp;
 
-  cf_add_method(t, cf_id(t, "debug"))->imp = debug_imp;
-  cf_add_method(t, cf_id(t, "now"))->imp = now_imp;
+  cf_add_method(t, cf_id(t, "debug"), 0, 0)->imp = debug_imp;
+  cf_add_method(t, cf_id(t, "now"), 0, 1, cf_ret_type(t->time_type))->imp = now_imp;
   return t;
 }
 
@@ -297,6 +322,12 @@ void cf_thread_free(struct cf_thread *thread) {
 
 struct cf_value *cf_push(struct cf_thread *thread) {
   return c7_deque_push_back(&thread->stack);
+}
+
+struct cf_value *cf_pop(struct cf_thread *thread) {
+  struct cf_value *v = c7_deque_back(&thread->stack);
+  c7_deque_pop_back(&thread->stack);
+  return v;
 }
 
 void cf_dump_stack(struct cf_thread *thread,

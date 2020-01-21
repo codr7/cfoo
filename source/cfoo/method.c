@@ -7,12 +7,23 @@
 
 struct cf_method *cf_method_init(struct cf_method *method,
 				 struct cf_thread *thread,
-				 const struct cf_id *id) {
+				 const struct cf_id *id,
+				 uint8_t arg_count, uint8_t ret_count,
+				 va_list args) {
   method->thread = thread;
   method->id = id;
   method->arg_count = method->ret_count = 0;
   method->imp = NULL;
   method->ref_count = 1;
+
+  for (uint8_t i = 0; i < arg_count; i++) {
+    method->args[i] = va_arg(args, struct cf_arg);
+  }
+
+  for (uint8_t i = 0; i < arg_count; i++) {
+    method->rets[i] = va_arg(args, struct cf_ret);
+  }
+
   return method;
 }
 
@@ -31,9 +42,16 @@ void cf_method_deref(struct cf_method *method) {
 }
 
 struct cf_method *cf_add_method(struct cf_thread *thread,
-				const struct cf_id *id) {
+				const struct cf_id *id,
+				uint8_t arg_count, uint8_t ret_count,
+				...) {
+  va_list args;
+  va_start(args, ret_count);
+
   struct cf_method *m = cf_method_init(c7_rbtree_add(&thread->methods, id),
-				       thread, id);
+				       thread, id, arg_count, ret_count, args);
+
+  va_end(args);
 
   cf_value_init(&cf_binding_init(c7_rbtree_add(&thread->bindings, id),
 				 &thread->bindings,

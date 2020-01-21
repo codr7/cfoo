@@ -14,6 +14,7 @@ struct cf_value {
   struct cf_type *type;
   
   union {
+    bool as_bool;
     int64_t as_int64;
     struct cf_type *as_meta;
     struct cf_method *as_method;

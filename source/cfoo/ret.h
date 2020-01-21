@@ -15,5 +15,7 @@ struct cf_ret {
 };
 
 struct cf_ret cf_ret_index(uint8_t index);
+struct cf_ret cf_ret_type(struct cf_type *type);
+void cf_ret_deinit(struct cf_ret *ret);
 
 #endif

@@ -36,13 +36,14 @@ struct cf_thread {
   struct c7_dqpool op_pool;
   struct c7_chan chan;
 
-  struct cf_type *a_type, *int64_type, *meta_type, *method_type, *time_type;
+  struct cf_type *a_type, *bool_type, *int64_type, *meta_type, *method_type, *time_type;
 };
 
 struct cf_thread *cf_thread_new();
 void cf_thread_free(struct cf_thread *thread);
 
 struct cf_value *cf_push(struct cf_thread *thread);
+struct cf_value *cf_pop(struct cf_thread *thread);
 
 void cf_dump_stack(struct cf_thread *thread,
 		   const struct cf_point *point,

@@ -18,5 +18,6 @@ struct cf_arg {
 
 struct cf_arg cf_arg_index(const struct cf_id *id, uint8_t index);
 struct cf_arg cf_arg_type(const struct cf_id *id, struct cf_type *type);
+void cf_arg_deinit(struct cf_arg *arg);
 
 #endif
