@@ -10,6 +10,7 @@
 #include "cfoo/op.h"
 #include "cfoo/thread.h"
 #include "cfoo/type.h"
+#include "cfoo/type_parent.h"
 
 static enum c7_order compare_binding(const void *key, const void *value) {
   return cf_id_compare(key, ((const struct cf_binding *)value)->id);
@@ -48,7 +49,7 @@ static bool bool_is(const struct cf_value *x, const struct cf_value *y) {
 }
 
 static struct cf_type *add_bool_type(struct cf_thread *thread) {
-  struct cf_type *t = cf_add_type(thread, cf_id(thread, "Bool"));
+  struct cf_type *t = cf_add_type(thread, cf_id(thread, "Bool"), thread->a_type);
   t->copy_value = bool_copy;
   t->compare_value = bool_compare;
   t->dump_value = bool_dump;
@@ -77,7 +78,7 @@ static bool int64_is(const struct cf_value *x, const struct cf_value *y) {
 }
 
 static struct cf_type *add_int64_type(struct cf_thread *thread) {
-  struct cf_type *t = cf_add_type(thread, cf_id(thread, "Int64"));
+  struct cf_type *t = cf_add_type(thread, cf_id(thread, "Int64"), thread->a_type);
   t->copy_value = int64_copy;
   t->compare_value = int64_compare;
   t->dump_value = int64_dump;
@@ -144,7 +145,7 @@ static bool method_is(const struct cf_value *x, const struct cf_value *y) {
 }
 
 static struct cf_type *add_method_type(struct cf_thread *thread) {
-  struct cf_type *t = cf_add_type(thread, cf_id(thread, "Method"));
+  struct cf_type *t = cf_add_type(thread, cf_id(thread, "Method"), thread->a_type);
   t->compare_value = method_compare;
   t->copy_value = method_copy;
   t->deinit_value = method_deinit;
@@ -193,7 +194,7 @@ static bool time_is(const struct cf_value *x, const struct cf_value *y) {
 }
 
 static struct cf_type *add_time_type(struct cf_thread *thread) {
-  struct cf_type *t = cf_add_type(thread, cf_id(thread, "Time"));
+  struct cf_type *t = cf_add_type(thread, cf_id(thread, "Time"), thread->a_type);
   t->compare_value = time_compare;
   t->copy_value = time_copy;
   t->dump_value = time_dump;
@@ -242,6 +243,7 @@ struct cf_thread *cf_thread_new() {
   c7_tree_init(&t->ids, compare_id, &t->id_pool);
 
   c7_tree_pool_init(&t->type_pool, CF_SLAB_SIZE, sizeof(struct cf_type));
+  c7_tree_pool_init(&t->type_parent_pool, CF_SLAB_SIZE, sizeof(struct cf_type_parent));
   c7_tree_init(&t->types, compare_type, &t->type_pool);
 
   c7_tree_pool_init(&t->method_pool, CF_SLAB_SIZE, sizeof(struct cf_method));
@@ -259,6 +261,7 @@ struct cf_thread *cf_thread_new() {
   t->meta_type = NULL;
   t->meta_type = add_meta_type(t);
   t->a_type = cf_add_type(t, cf_id(t, "A"));
+  cf_derive(t->meta_type, t->a_type);
   t->bool_type = add_bool_type(t);
   t->method_type = add_method_type(t);
   t->int64_type = add_int64_type(t);
@@ -304,6 +307,7 @@ void cf_thread_free(struct cf_thread *thread) {
   }
   
   c7_tree_clear(&thread->types);
+  c7_tree_pool_deinit(&thread->type_parent_pool);
   c7_tree_pool_deinit(&thread->type_pool);
   
   c7_tree_do(&thread->ids, id) {

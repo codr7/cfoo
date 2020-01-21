@@ -21,7 +21,7 @@ struct cf_thread {
   struct c7_tree_pool id_pool;
   struct c7_tree ids;
 
-  struct c7_tree_pool type_pool;
+  struct c7_tree_pool type_pool, type_parent_pool;
   struct c7_tree types;
 
   struct c7_tree_pool method_pool;

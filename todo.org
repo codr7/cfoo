@@ -1,5 +1,15 @@
-* add cf_method.args/rets
-** finish ==/is
-** delay call op in compile until enough args
-*** keep count of forms per compile
+* add CF_DISPATCH op
+** add struct cf_method_set
+*** init in add_method if method is already bound
+**** add method to set
+*** order most specific first
+**** compare type pointers
+**** make value args more specific than type args
+***** compare value types if both args are values
+** add cf_value.as_method_set
+** add cf_dispatch(method_set, stack)
+** generate CF_DISPATCH instead of CF_CALL for method sets
+* add is-a method
+** return root
+** add struct cf_type *cf_is_a(child, parent)
 * add =, !=, <, >, <=, >= methods
