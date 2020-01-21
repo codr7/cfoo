@@ -115,12 +115,11 @@ const char *cf_parse_id(struct cf_thread *thread,
   name[l] = 0;
   strncpy(name, start, l);
 
-  struct cf_form *f = (*in == '(' &&
-		       (in = cf_parse_group(thread, in, point, out)))
-    ? c7_deque_push_front(&((struct cf_form *)c7_deque_back(out))->as_group)
-    : c7_deque_push_back(out);
-    
-  cf_form_init(f, CF_ID, &start_point, thread)->as_id = cf_id(thread, name);
+  if (*in == '(' && (in = cf_parse_group(thread, in, point, out))) {
+    out = &((struct cf_form *)c7_deque_back(out))->as_group;
+  }
+
+  cf_form_init(c7_deque_push_back(out), CF_ID, &start_point, thread)->as_id = cf_id(thread, name);
   return in;
 }
 

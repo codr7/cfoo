@@ -50,6 +50,8 @@ static void parse_tests(struct cf_thread *t) {
   f = c7_deque_back(&out);
   assert(f->type = CF_GROUP);
   assert(f->as_group.count == 3);
+  f = c7_deque_back(&f->as_group);
+  assert(f->as_id == cf_id(t, "foo"));
   assert(p.line == CF_MIN_LINE && p.column == 12);
   cf_clear_forms(&out);
 }

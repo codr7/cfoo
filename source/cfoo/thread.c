@@ -270,6 +270,7 @@ struct cf_thread *cf_thread_new() {
 
   cf_add_method(t, cf_id(t, "debug"), 0, 0)->imp = debug_imp;
   cf_add_method(t, cf_id(t, "now"), 0, 1, cf_ret_type(t->time_type))->imp = now_imp;
+  
   return t;
 }
 

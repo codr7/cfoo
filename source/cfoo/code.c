@@ -40,27 +40,21 @@ static void id_compile(struct cf_value *value,
   }
 }
 
-void cf_compile(struct c7_deque *in,
+bool cf_compile(struct c7_deque *in,
 		struct c7_tree *bindings,
 		struct cf_code *out) {
   while (in->count) {
     struct cf_form *f = c7_deque_front(in);
 
     switch (f->type) {
-    case CF_GROUP:
-      cf_compile(&f->as_group, bindings, out);
-      cf_form_deinit(f);
-      c7_deque_pop_front(in);
-      break;
     case CF_ID: {
       struct cf_binding *b = c7_tree_find(bindings, f->as_id);
       
       if (b) {
 	id_compile(&b->value, &f->point, out);
       } else {
-	cf_error(out->thread, &f->point,
-		 CF_EUNKNOWN,
-		 "Unknown id: %s", f->as_id->name);
+	cf_error(out->thread, &f->point, CF_EUNKNOWN, "Unknown id: %s", f->as_id->name);
+	return false;
       }
       
       cf_form_deinit(f);
@@ -75,9 +69,12 @@ void cf_compile(struct c7_deque *in,
       c7_deque_pop_front(in);
       break;
     default:
-      abort();
+      cf_error(out->thread, &f->point, CF_ESYNTAX, "Unexpected form");
+      return false;
     }
   }
+
+  return true;
 }
 
 bool cf_eval(struct cf_code *in) {
