@@ -41,7 +41,7 @@ static void id_compile(struct cf_value *value,
 }
 
 void cf_compile(struct c7_deque *in,
-		struct c7_rbtree *bindings,
+		struct c7_tree *bindings,
 		struct cf_code *out) {
   while (in->count) {
     struct cf_form *f = c7_deque_front(in);
@@ -53,7 +53,7 @@ void cf_compile(struct c7_deque *in,
       c7_deque_pop_front(in);
       break;
     case CF_ID: {
-      struct cf_binding *b = c7_rbtree_find(bindings, f->as_id);
+      struct cf_binding *b = c7_tree_find(bindings, f->as_id);
       
       if (b) {
 	id_compile(&b->value, &f->point, out);

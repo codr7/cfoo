@@ -32,15 +32,15 @@ struct cf_type *cf_type_ref(struct cf_type *type) {
 void cf_type_deref(struct cf_type *type) {
   if (!--type->ref_count) {
     cf_type_deinit(type);
-    c7_rbtree_remove(&type->thread->types, type->id);
+    c7_tree_remove(&type->thread->types, type->id);
   }
 }
 
 struct cf_type *cf_add_type(struct cf_thread *thread, const struct cf_id *id) {
   struct cf_type *t =
-    cf_type_init(c7_rbtree_add(&thread->types, id), thread, id);
+    cf_type_init(c7_tree_add(&thread->types, id), thread, id);
 
-  cf_value_init(&cf_binding_init(c7_rbtree_add(&thread->bindings, id),
+  cf_value_init(&cf_binding_init(c7_tree_add(&thread->bindings, id),
 				 &thread->bindings,
 				 id)->value,
 		thread->meta_type ? thread->meta_type : t)->as_meta =

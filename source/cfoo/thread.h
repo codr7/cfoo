@@ -3,9 +3,9 @@
 
 #include <codr7/chan.h>
 #include <codr7/deque.h>
-#include <codr7/dqpool.h>
-#include <codr7/rbpool.h>
-#include <codr7/rbtree.h>
+#include <codr7/deque_pool.h>
+#include <codr7/tree_pool.h>
+#include <codr7/tree.h>
 #include <stdbool.h>
 
 struct cf_point;
@@ -14,26 +14,26 @@ struct cf_type;
 struct cf_thread {
   bool debug;
 
-  struct c7_dqpool error_pool;
+  struct c7_deque_pool error_pool;
   struct c7_deque errors;
-  struct c7_dqpool form_pool;
+  struct c7_deque_pool form_pool;
 
-  struct c7_rbpool id_pool;
-  struct c7_rbtree ids;
+  struct c7_tree_pool id_pool;
+  struct c7_tree ids;
 
-  struct c7_rbpool type_pool;
-  struct c7_rbtree types;
+  struct c7_tree_pool type_pool;
+  struct c7_tree types;
 
-  struct c7_rbpool method_pool;
-  struct c7_rbtree methods;
+  struct c7_tree_pool method_pool;
+  struct c7_tree methods;
 
-  struct c7_rbpool binding_pool;
-  struct c7_rbtree bindings;
+  struct c7_tree_pool binding_pool;
+  struct c7_tree bindings;
 
-  struct c7_dqpool stack_pool;
+  struct c7_deque_pool stack_pool;
   struct c7_deque stack;
   
-  struct c7_dqpool op_pool;
+  struct c7_deque_pool op_pool;
   struct c7_chan chan;
 
   struct cf_type *a_type, *bool_type, *int64_type, *meta_type, *method_type, *time_type;

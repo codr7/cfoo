@@ -1,4 +1,4 @@
-#include <codr7/rbtree.h>
+#include <codr7/tree.h>
 
 #include "cfoo/binding.h"
 #include "cfoo/method.h"
@@ -37,7 +37,7 @@ struct cf_method *cf_method_ref(struct cf_method *method) {
 void cf_method_deref(struct cf_method *method) {
   if (!--method->ref_count) {
     cf_method_deinit(method);
-    c7_rbtree_remove(&method->thread->methods, method->id);
+    c7_tree_remove(&method->thread->methods, method->id);
   }
 }
 
@@ -48,12 +48,12 @@ struct cf_method *cf_add_method(struct cf_thread *thread,
   va_list args;
   va_start(args, ret_count);
 
-  struct cf_method *m = cf_method_init(c7_rbtree_add(&thread->methods, id),
+  struct cf_method *m = cf_method_init(c7_tree_add(&thread->methods, id),
 				       thread, id, arg_count, ret_count, args);
 
   va_end(args);
 
-  cf_value_init(&cf_binding_init(c7_rbtree_add(&thread->bindings, id),
+  cf_value_init(&cf_binding_init(c7_tree_add(&thread->bindings, id),
 				 &thread->bindings,
 				 id)->value,
 		thread->method_type)->as_method = cf_method_ref(m);
