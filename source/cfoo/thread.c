@@ -266,7 +266,7 @@ struct cf_thread *cf_thread_new() {
 
   cf_add_method(t, cf_id(t, "=="), 2, 1,
 		cf_arg_type(cf_id(t, "x"), t->a_type), cf_arg_index(cf_id(t, "y"), 0),
-		cf_ret_type(t->meta_type))->imp = is_imp;
+		cf_ret_type(t->bool_type))->imp = is_imp;
 
   cf_add_method(t, cf_id(t, "debug"), 0, 0)->imp = debug_imp;
   cf_add_method(t, cf_id(t, "now"), 0, 1, cf_ret_type(t->time_type))->imp = now_imp;

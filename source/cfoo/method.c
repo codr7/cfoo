@@ -20,14 +20,22 @@ struct cf_method *cf_method_init(struct cf_method *method,
     method->args[i] = va_arg(args, struct cf_arg);
   }
 
-  for (uint8_t i = 0; i < arg_count; i++) {
+  for (uint8_t i = 0; i < ret_count; i++) {
     method->rets[i] = va_arg(args, struct cf_ret);
   }
 
   return method;
 }
 
-void cf_method_deinit(struct cf_method *method) {}
+void cf_method_deinit(struct cf_method *method) {
+  for (uint8_t i = 0; i < method->arg_count; i++) {
+    cf_arg_deinit(method->args + i);
+  }
+
+  for (uint8_t i = 0; i < method->ret_count; i++) {
+    cf_ret_deinit(method->rets + i);
+  }
+}
 
 struct cf_method *cf_method_ref(struct cf_method *method) {
   method->ref_count++;
