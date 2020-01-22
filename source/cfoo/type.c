@@ -17,6 +17,7 @@ struct cf_type *cf_type_init(struct cf_type *type,
 			     const struct cf_id *id) {
   type->thread = thread;
   type->id = id;
+  type->tag = thread->next_type_tag++;
   c7_tree_init(&type->parents, compare_parent, &thread->type_parent_pool);
   type->ref_count = 1;
   
@@ -64,12 +65,14 @@ void cf_derive(struct cf_type *child, struct cf_type *root) {
   derive_type(child, root, root);
 }
 
-struct cf_type *cf_root(struct cf_type *child, struct cf_type *parent) {
-  if (child == parent) {
-    return child;
+struct cf_type *cf_find_root(struct cf_type *x, struct cf_type *y, bool strict) {
+  if (x == y) {
+    return x;
   }
-  
-  struct cf_type_parent *p = c7_tree_find(&child->parents, parent);
+
+  bool x_parent = !strict &&  x->tag < y->tag;
+  struct cf_type *pt = x_parent ? x : y, *ct = x_parent ? y : x;
+  struct cf_type_parent *p = c7_tree_find(&ct->parents, pt);
   return p ? p->root : NULL;
 }
 

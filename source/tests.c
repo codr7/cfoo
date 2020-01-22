@@ -58,9 +58,11 @@ static void parse_tests(struct cf_thread *t) {
 }
 
 static void type_tests(struct cf_thread *thread) {
-  assert(cf_root(thread->a_type, thread->a_type) == thread->a_type);
-  assert(cf_root(thread->meta_type, thread->a_type) == thread->a_type);  
-  assert(!cf_root(thread->a_type, thread->meta_type));  
+  assert(cf_find_root(thread->a_type, thread->a_type, true) == thread->a_type);
+  assert(cf_find_root(thread->bool_type, thread->a_type, true) == thread->a_type);  
+
+  assert(!cf_find_root(thread->a_type, thread->bool_type, true));  
+  assert(cf_find_root(thread->a_type, thread->bool_type, false) == thread->a_type);  
 }
 
 int main() {

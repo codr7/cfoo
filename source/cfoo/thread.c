@@ -289,6 +289,7 @@ struct cf_thread *cf_thread_new() {
   c7_deque_pool_init(&t->op_pool, CF_SLAB_SIZE, sizeof(struct cf_op));
   c7_chan_init(&t->chan, CF_SLAB_SIZE, sizeof(struct cf_value), 0);
 
+  t->next_type_tag = 0;
   t->meta_type = NULL;
   t->meta_type = add_meta_type(t);
   t->a_type = cf_add_type(t, cf_id(t, "A"));

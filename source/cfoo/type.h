@@ -16,6 +16,7 @@ struct cf_value;
 struct cf_type {
   struct cf_thread *thread;
   const struct cf_id *id;
+  uint64_t tag;
   struct c7_tree parents;
   uint16_t ref_count;
 
@@ -43,7 +44,7 @@ struct cf_type *cf_type_ref(struct cf_type *type);
 void cf_type_deref(struct cf_type *type);
 
 void cf_derive(struct cf_type *child, struct cf_type *parent);
-struct cf_type *cf_root(struct cf_type *child, struct cf_type *parent);
+struct cf_type *cf_find_root(struct cf_type *child, struct cf_type *parent, bool strict);
 			
 struct cf_type *_cf_add_type(struct cf_thread *thread, const struct cf_id *id, ...);
 

@@ -36,6 +36,8 @@ struct cf_thread {
   struct c7_deque_pool op_pool;
   struct c7_chan chan;
 
+  uint64_t next_type_tag;
+
   struct cf_type *a_type,
     *bool_type,
     *int64_type,
