@@ -208,14 +208,14 @@ static bool time_dump(struct cf_thread *thread,
   struct tm *t = gmtime(&v->as_time.tv_sec);
   
   if (!t) {
-    cf_error(thread, point, CF_ERUNTIME, "Failed converting time: %d", errno);
+    cf_error(thread, point, CF_ERUN, "Failed converting time: %d", errno);
     return false;
   }
 
   char buf[27];
 
   if (!strftime(buf, sizeof(buf), "Time(%Y-%m-%d %H:%M:%S)", t)) {
-    cf_error(thread, point, CF_ERUNTIME, "Failed formatting time: %d", errno);
+    cf_error(thread, point, CF_ERUN, "Failed formatting time: %d", errno);
     return false;
   }
 
@@ -258,7 +258,7 @@ static bool debug_imp(struct cf_thread *thread, const struct cf_point *point) {
 static bool now_imp(struct cf_thread *thread, const struct cf_point *point) {
   if (!timespec_get(&cf_value_init(cf_push(thread), thread->time_type)->as_time,
 		    TIME_UTC)) {
-    cf_error(thread, point, CF_ERUNTIME, "Failed getting time: %d", errno);
+    cf_error(thread, point, CF_ERUN, "Failed getting time: %d", errno);
     return false;
   }
 
@@ -376,6 +376,10 @@ struct cf_value *cf_push(struct cf_thread *thread) {
 }
 
 struct cf_value *cf_pop(struct cf_thread *thread) {
+  if (!thread->stack.count) {
+    return NULL;
+  }
+  
   struct cf_value *v = c7_deque_back(&thread->stack);
   c7_deque_pop_back(&thread->stack);
   return v;

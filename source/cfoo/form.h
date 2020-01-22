@@ -9,7 +9,7 @@
 struct cf_id;
 struct cf_thread;
 
-enum cf_form_type {CF_ID, CF_GROUP, CF_VALUE};
+enum cf_form_type {CF_ID, CF_GROUP, CF_UNDERSCORE, CF_VALUE};
 
 struct cf_form {
   enum cf_form_type type;

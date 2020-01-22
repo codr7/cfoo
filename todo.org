@@ -1,6 +1,3 @@
-* add _ for dropping
-** hardcode in parser
-** add CF_DROP op
 * add CF_DISPATCH op
 ** add cf_dispatch(method_set, stack)
 ** generate CF_DISPATCH/CF_CALL depending on set count for MethodSet ids

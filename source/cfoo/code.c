@@ -61,6 +61,13 @@ bool cf_compile(struct c7_deque *in,
       c7_deque_pop_front(in);
       break;
     }
+    case CF_UNDERSCORE:
+      cf_op_init(c7_deque_push_back(&out->ops), CF_DROP)->as_drop =
+	(struct cf_drop_op){.point = f->point};  
+      
+      cf_form_deinit(f);
+      c7_deque_pop_front(in);
+      break;      
     case CF_VALUE:
       cf_copy(&cf_op_init(c7_deque_push_back(&out->ops), CF_PUSH)->as_push.value,
 	      &f->as_value);

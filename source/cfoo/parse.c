@@ -51,6 +51,10 @@ const char *cf_parse_form(struct cf_thread *thread,
   switch (c) {
   case 0:
     return in;
+  case '_':
+    cf_form_init(c7_deque_push_back(out), CF_UNDERSCORE, point, thread);
+    point->column++;
+    return ++in;
   case '(':
     return cf_parse_group(thread, in, point, out);
   default:
