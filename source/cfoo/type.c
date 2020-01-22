@@ -64,6 +64,15 @@ void cf_derive(struct cf_type *child, struct cf_type *root) {
   derive_type(child, root, root);
 }
 
+struct cf_type *cf_root(struct cf_type *child, struct cf_type *parent) {
+  if (child == parent) {
+    return child;
+  }
+  
+  struct cf_type_parent *p = c7_tree_find(&child->parents, parent);
+  return p ? p->root : NULL;
+}
+
 struct cf_type *_cf_add_type(struct cf_thread *thread, const struct cf_id *id, ...) {
   struct cf_type *t =
     cf_type_init(c7_tree_add(&thread->types, id), thread, id);

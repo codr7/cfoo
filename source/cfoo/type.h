@@ -43,7 +43,8 @@ struct cf_type *cf_type_ref(struct cf_type *type);
 void cf_type_deref(struct cf_type *type);
 
 void cf_derive(struct cf_type *child, struct cf_type *parent);
-
+struct cf_type *cf_root(struct cf_type *child, struct cf_type *parent);
+			
 struct cf_type *_cf_add_type(struct cf_thread *thread, const struct cf_id *id, ...);
 
 #endif

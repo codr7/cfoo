@@ -8,7 +8,7 @@
 ***** compare value types if both args are values
 ** add cf_dispatch(method_set, stack)
 ** generate CF_DISPATCH instead of CF_CALL for method sets
-* add is-a method
-** return root
-** add struct cf_type *cf_is_a(child, parent)
 * add =, !=, <, >, <=, >= methods
+** implement using cf_compare
+** overload for meta type
+*** return false if cf_root() is null

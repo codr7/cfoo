@@ -7,6 +7,7 @@
 #include "cfoo/parse.h"
 #include "cfoo/point.h"
 #include "cfoo/thread.h"
+#include "cfoo/type.h"
 
 static void parse_tests(struct cf_thread *t) {
   struct c7_deque out;
@@ -56,10 +57,17 @@ static void parse_tests(struct cf_thread *t) {
   cf_clear_forms(&out);
 }
 
+static void type_tests(struct cf_thread *thread) {
+  assert(cf_root(thread->a_type, thread->a_type) == thread->a_type);
+  assert(cf_root(thread->meta_type, thread->a_type) == thread->a_type);  
+  assert(!cf_root(thread->a_type, thread->meta_type));  
+}
+
 int main() {
   struct cf_thread *t = cf_thread_new();
   t->debug = true;
   parse_tests(t);
+  type_tests(t);
   cf_thread_free(t);
   return 0;
 }
