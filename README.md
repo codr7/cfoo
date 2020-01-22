@@ -14,12 +14,13 @@ cfoo v0.1.1
 
 Press Return in empty row to evaluate.
 
-  debug
+  1 2 3
   
-Debug enabled in repl, line 1, column 0
-  debug
+[1 2 3]
+
+  ___
   
-Debug disabled in repl, line 1, column 0
+[]
 ```
 
 ### license

@@ -163,7 +163,9 @@ static enum c7_order method_set_compare(const struct cf_value *x, const struct c
   return c7_compare(x->as_method_set, y->as_method_set);
 }
 
-static void method_set_copy(struct cf_value *dst, struct cf_value *src) {}
+static void method_set_copy(struct cf_value *dst, struct cf_value *src) {
+  dst->as_method_set = src->as_method_set;
+}
 
 static void method_set_deinit(struct cf_value *v) {}
 

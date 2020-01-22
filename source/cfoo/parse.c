@@ -115,6 +115,19 @@ const char *cf_parse_id(struct cf_thread *thread,
     point->column++;
   }
 
+  if (*in == '[') {
+    in++;
+    
+    while (*in) {
+      char c = *in++;
+      point->column++;
+      
+      if (c == ']') {
+	break;
+      }
+    }
+  }
+  
   size_t l = in - start;
   char name[l + 1];
   name[l] = 0;
