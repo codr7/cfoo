@@ -25,6 +25,10 @@ static enum c7_order compare_method(const void *key, const void *value) {
   return cf_id_compare(key, ((const struct cf_method *)value)->id);
 }
 
+static enum c7_order compare_method_set(const void *key, const void *value) {
+  return cf_id_compare(key, ((const struct cf_method_set *)value)->id);
+}
+
 static enum c7_order compare_type(const void *key, const void *value) {
   return cf_id_compare(key, ((const struct cf_type *)value)->id);
 }
@@ -280,6 +284,9 @@ struct cf_thread *cf_thread_new() {
   c7_tree_pool_init(&t->method_pool, CF_SLAB_SIZE, sizeof(struct cf_method));
   c7_tree_init(&t->methods, compare_method, &t->method_pool);
 
+  c7_tree_pool_init(&t->method_set_pool, CF_SLAB_SIZE, sizeof(struct cf_method_set));
+  c7_tree_init(&t->method_sets, compare_method_set, &t->method_set_pool);
+
   c7_tree_pool_init(&t->binding_pool, CF_SLAB_SIZE, sizeof(struct cf_binding));
   c7_tree_init(&t->bindings, compare_binding, &t->binding_pool);
 
@@ -289,6 +296,8 @@ struct cf_thread *cf_thread_new() {
   c7_deque_pool_init(&t->op_pool, CF_SLAB_SIZE, sizeof(struct cf_op));
   c7_chan_init(&t->chan, CF_SLAB_SIZE, sizeof(struct cf_value), 0);
 
+  struct cf_point p = cf_point(cf_id(t, "?"), -1, -1);
+  
   t->next_type_tag = 0;
   t->meta_type = NULL;
   t->meta_type = add_meta_type(t);
@@ -300,12 +309,12 @@ struct cf_thread *cf_thread_new() {
   t->int64_type = add_int64_type(t);
   t->time_type = add_time_type(t);
 
-  cf_add_method(t, cf_id(t, "=="), 2, 1,
+  cf_add_method(t, &p, &t->bindings, cf_id(t, "=="), 2, 1,
 		cf_arg_type(cf_id(t, "x"), t->a_type), cf_arg_index(cf_id(t, "y"), 0),
 		cf_ret_type(t->bool_type))->imp = is_imp;
 
-  cf_add_method(t, cf_id(t, "debug"), 0, 0)->imp = debug_imp;
-  cf_add_method(t, cf_id(t, "now"), 0, 1, cf_ret_type(t->time_type))->imp = now_imp;
+  cf_add_method(t, &p, &t->bindings, cf_id(t, "debug"), 0, 0)->imp = debug_imp;
+  cf_add_method(t, &p, &t->bindings, cf_id(t, "now"), 0, 1, cf_ret_type(t->time_type))->imp = now_imp;
   
   return t;
 }
@@ -331,6 +340,9 @@ void cf_thread_free(struct cf_thread *thread) {
   c7_tree_do(&thread->methods, m) {
     cf_method_deinit(m);
   }
+  
+  c7_tree_clear(&thread->method_sets);
+  c7_tree_pool_deinit(&thread->method_set_pool);
   
   c7_tree_clear(&thread->methods);
   c7_tree_pool_deinit(&thread->method_pool);

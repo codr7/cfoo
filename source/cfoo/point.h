@@ -10,10 +10,10 @@ struct cf_id;
 
 struct cf_point {
   const struct cf_id *file;
-  uint16_t line, column;
+  int16_t line, column;
 };
 
 struct cf_point cf_point(const struct cf_id *file,
-			 uint16_t line, uint16_t column);
+			 int16_t line, int16_t column);
 
 #endif

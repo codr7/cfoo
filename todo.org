@@ -1,14 +1,7 @@
 * add CF_DISPATCH op
-** finish struct cf_method_set
-*** init in add_method if method is already bound
-**** add method to set
-*** order most specific first
-**** compare type pointers
-**** make value args more specific than type args
-***** compare value types if both args are values
 ** add cf_dispatch(method_set, stack)
-** generate CF_DISPATCH instead of CF_CALL for method sets
+** generate CF_DISPATCH instead of CF_CALL if count > 1
 * add =, !=, <, >, <=, >= methods
 ** implement using cf_compare
 ** overload for meta type
-*** return false if cf_root() is null
+*** return false if cf_find_root() returns null

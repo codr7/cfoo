@@ -27,6 +27,9 @@ struct cf_thread {
   struct c7_tree_pool method_pool;
   struct c7_tree methods;
 
+  struct c7_tree_pool method_set_pool;
+  struct c7_tree method_sets;
+
   struct c7_tree_pool binding_pool;
   struct c7_tree bindings;
 
