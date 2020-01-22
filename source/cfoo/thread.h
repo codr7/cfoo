@@ -36,7 +36,11 @@ struct cf_thread {
   struct c7_deque_pool op_pool;
   struct c7_chan chan;
 
-  struct cf_type *a_type, *bool_type, *int64_type, *meta_type, *method_type, *time_type;
+  struct cf_type *a_type,
+    *bool_type,
+    *int64_type,
+    *meta_type, *method_type, *method_set_type,
+    *time_type;
 };
 
 struct cf_thread *cf_thread_new();

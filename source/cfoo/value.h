@@ -18,6 +18,7 @@ struct cf_value {
     int64_t as_int64;
     struct cf_type *as_meta;
     struct cf_method *as_method;
+    struct cf_method_set *as_method_set;
     struct timespec as_time;
   };
 };

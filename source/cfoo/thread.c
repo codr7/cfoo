@@ -7,6 +7,7 @@
 #include "cfoo/form.h"
 #include "cfoo/id.h"
 #include "cfoo/method.h"
+#include "cfoo/method_set.h"
 #include "cfoo/op.h"
 #include "cfoo/thread.h"
 #include "cfoo/type.h"
@@ -154,6 +155,36 @@ static struct cf_type *add_method_type(struct cf_thread *thread) {
   return t;
 }
 
+static enum c7_order method_set_compare(const struct cf_value *x, const struct cf_value *y) {
+  return c7_compare(x->as_method_set, y->as_method_set);
+}
+
+static void method_set_copy(struct cf_value *dst, struct cf_value *src) {}
+
+static void method_set_deinit(struct cf_value *v) {}
+
+static bool method_set_dump(struct cf_thread *thread,
+		        const struct cf_point *point,
+		        const struct cf_value *v,
+			FILE *out) {
+  printf("MethodSet(%s)", v->as_method_set->id->name);
+  return true;
+}
+
+static bool method_set_is(const struct cf_value *x, const struct cf_value *y) {
+  return x->as_method_set == y->as_method_set;
+}
+
+static struct cf_type *add_method_set_type(struct cf_thread *thread) {
+  struct cf_type *t = cf_add_type(thread, cf_id(thread, "MethodSet"), thread->a_type);
+  t->compare_value = method_set_compare;
+  t->copy_value = method_set_copy;
+  t->deinit_value = method_set_deinit;
+  t->dump_value = method_set_dump;
+  t->is_value = method_set_is;
+  return t;
+}
+
 static enum c7_order time_compare(const struct cf_value *x, const struct cf_value *y) {
   const struct timespec *xt = &x->as_time, *yt = &y->as_time;  
   enum c7_order sec = c7_compare(xt->tv_sec, yt->tv_sec);
@@ -264,6 +295,7 @@ struct cf_thread *cf_thread_new() {
   cf_derive(t->meta_type, t->a_type);
   t->bool_type = add_bool_type(t);
   t->method_type = add_method_type(t);
+  t->method_set_type = add_method_set_type(t);
   t->int64_type = add_int64_type(t);
   t->time_type = add_time_type(t);
 
