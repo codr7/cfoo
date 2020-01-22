@@ -30,7 +30,7 @@ Press Return in empty row to evaluate.
   
 [F T]
 
-  now
+  __ now
   
 [Time(2020-01-22 20:22:54)]
 ```
