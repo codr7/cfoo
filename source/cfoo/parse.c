@@ -118,8 +118,8 @@ const char *cf_parse_id(struct cf_thread *thread,
 
   if (*in == '(' && (in = cf_parse_group(thread, in, point, out))) {
     struct cf_form *gf = c7_deque_back(out);
-    struct c7_deque g = gf->as_group;
-    c7_list_fix(&g.slabs);
+    struct c7_deque g;
+    c7_deque_assign(&g, &gf->as_group);
     c7_deque_pop_back(out);
 
     c7_deque_do(&g, f) {
