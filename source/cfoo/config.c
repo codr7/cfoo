@@ -1,3 +1,3 @@
 #include "cfoo/config.h"
 
-const int CF_VERSION[] = {0, 1, 2};
+const int CF_VERSION[] = {0, 1, 3};

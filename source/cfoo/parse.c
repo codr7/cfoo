@@ -52,7 +52,7 @@ const char *cf_parse_form(struct cf_thread *thread,
   case 0:
     return in;
   case '_':
-    cf_form_init(c7_deque_push_back(out), CF_UNDERSCORE, point, thread);
+    cf_form_init(c7_deque_push_back(out), CF_UNDER, point, thread);
     point->column++;
     return ++in;
   case '(':

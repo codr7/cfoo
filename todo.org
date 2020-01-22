@@ -1,7 +1,13 @@
 * add CF_DISPATCH op
 ** add cf_dispatch(method_set, stack)
 ** generate CF_DISPATCH for MethodSet ids
-* add =, !=, <, >, <=, >= methods
+* add ! support
+** add CF_EXCLAIM form
+** hardcode in parser
+*** parse id and push after if followed directly by id
+** CF_NOT op
+* add =, <, >, <=, >= methods
+** add support for <> in cf_id_char()
 ** implement using cf_compare
 ** overload for meta type
 *** return false if cf_find_root() returns null

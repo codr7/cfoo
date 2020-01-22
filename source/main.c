@@ -29,7 +29,7 @@ static void repl(struct cf_thread *thread) {
     char *l = c7_stream_getline(&in, stdin);
 
     if (!l || l[0] == '\n') {
-      if (!l || in.length == 1) {
+      if (feof(stdin)) {
 	break;
       }
       

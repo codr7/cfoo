@@ -22,6 +22,14 @@ Press Return in empty row to evaluate.
   
 []
 
+  1 ==(2)
+  
+[F]
+
+  1 ==(1)
+  
+[F T]
+
   now
   
 [Time(2020-01-22 20:22:54)]

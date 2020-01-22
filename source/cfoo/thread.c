@@ -45,7 +45,7 @@ static bool bool_dump(struct cf_thread *thread,
 		       const struct cf_point *point,
 		       const struct cf_value *v,
 		       FILE *out) {
-  printf("%c", v->as_bool ? 'T' : 'F');
+  fprintf(out, "%c", v->as_bool ? 'T' : 'F');
   return true;
 }
 
@@ -74,7 +74,7 @@ static bool int64_dump(struct cf_thread *thread,
 		       const struct cf_point *point,
 		       const struct cf_value *v,
 		       FILE *out) {
-  printf("%" PRId64, v->as_int64);
+  fprintf(out, "%" PRId64, v->as_int64);
   return true;
 }
 
@@ -107,7 +107,7 @@ static bool meta_dump(struct cf_thread *thread,
 		      const struct cf_point *point,
 		      const struct cf_value *v,
 		      FILE *out) {
-  printf("Type(%s)", v->as_meta->id->name);
+  fprintf(out, "Type(%s)", v->as_meta->id->name);
   return true;
 }
 
@@ -141,7 +141,7 @@ static bool method_dump(struct cf_thread *thread,
 		        const struct cf_point *point,
 		        const struct cf_value *v,
 			FILE *out) {
-  printf("Method(%s)", v->as_method->id->name);
+  fprintf(out, "Method(%s)", v->as_method->id->name);
   return true;
 }
 
@@ -173,7 +173,7 @@ static bool method_set_dump(struct cf_thread *thread,
 		        const struct cf_point *point,
 		        const struct cf_value *v,
 			FILE *out) {
-  printf("MethodSet(%s)", v->as_method_set->id->name);
+  fprintf(out, "MethodSet(%s)", v->as_method_set->id->name);
   return true;
 }
 
