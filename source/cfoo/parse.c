@@ -1,3 +1,4 @@
+#include <assert.h>
 #include <codr7/deque.h>
 #include <ctype.h>
 #include <stddef.h>
@@ -116,7 +117,16 @@ const char *cf_parse_id(struct cf_thread *thread,
   strncpy(name, start, l);
 
   if (*in == '(' && (in = cf_parse_group(thread, in, point, out))) {
-    out = &((struct cf_form *)c7_deque_back(out))->as_group;
+    struct cf_form *gf = c7_deque_back(out);
+    struct c7_deque g = gf->as_group;
+    c7_list_fix(&g.slabs);
+    c7_deque_pop_back(out);
+
+    c7_deque_do(&g, f) {
+      *(struct cf_form *)c7_deque_push_back(out) = *(struct cf_form *)f;
+    }
+    
+    c7_deque_clear(&g);
   }
 
   cf_form_init(c7_deque_push_back(out), CF_ID, &start_point, thread)->as_id = cf_id(thread, name);

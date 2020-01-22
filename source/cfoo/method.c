@@ -82,6 +82,11 @@ struct cf_method *cf_add_method(struct cf_thread *thread,
   
   for (uint8_t i = 0; i < arg_count; i++) {
     m_args[i] = va_arg(args, struct cf_arg);
+
+    if (i) {
+      c7_stream_putc(&id_buf, ' ');
+    }
+    
     c7_stream_puts(&id_buf, m_args[i].id->name);
   }
 

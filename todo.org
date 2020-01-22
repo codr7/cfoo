@@ -1,7 +1,11 @@
+* add _ for dropping
+** hardcode in parser
+** add CF_DROP op
 * add CF_DISPATCH op
 ** add cf_dispatch(method_set, stack)
-** generate CF_DISPATCH instead of CF_CALL if count > 1
+** generate CF_DISPATCH/CF_CALL depending on set count for MethodSet ids
 * add =, !=, <, >, <=, >= methods
 ** implement using cf_compare
 ** overload for meta type
 *** return false if cf_find_root() returns null
+* add point/bindings arg to cf_add_type like method
