@@ -1,7 +1,11 @@
 #include <stddef.h>
 #include "cfoo/point.h"
 
-struct cf_point cf_point(const struct cf_id *file,
-			 int16_t line, int16_t column) {
-  return (struct cf_point){.file = file, .line = line, .column = column};
+struct cf_point *cf_point_init(struct cf_point *point,
+			       const struct cf_id *file,
+			       int16_t line, int16_t column) {
+  point->file = file;
+  point->line = line;
+  point->column = column;
+  return point;
 }

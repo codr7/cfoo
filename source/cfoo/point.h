@@ -13,7 +13,8 @@ struct cf_point {
   int16_t line, column;
 };
 
-struct cf_point cf_point(const struct cf_id *file,
-			 int16_t line, int16_t column);
+struct cf_point *cf_point_init(struct cf_point *point,
+			       const struct cf_id *file,
+			       int16_t line, int16_t column);
 
 #endif

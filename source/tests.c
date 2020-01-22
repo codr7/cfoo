@@ -12,15 +12,16 @@
 static void parse_tests(struct cf_thread *t) {
   struct c7_deque out;
   c7_deque_init(&out, &t->form_pool);
+  struct cf_point p;
   
-  struct cf_point p = cf_point(cf_id(t, "id test"), CF_MIN_LINE, CF_MIN_COLUMN);
+  cf_point_init(&p, cf_id(t, "id test"), CF_MIN_LINE, CF_MIN_COLUMN);
   assert(!*cf_parse(t, "foo bar baz", &p, &out));
   assert(cf_ok(t));
   assert(out.count == 3);
   assert(p.line == CF_MIN_LINE && p.column == 11);
   cf_clear_forms(&out);
 
-  p = cf_point(cf_id(t, "int test"), CF_MIN_LINE, CF_MIN_COLUMN);
+  cf_point_init(&p, cf_id(t, "int test"), CF_MIN_LINE, CF_MIN_COLUMN);
   assert(!*cf_parse(t, "42 0b101010 0x2a", &p, &out));
   assert(cf_ok(t));
   assert(out.count == 3);
@@ -34,7 +35,7 @@ static void parse_tests(struct cf_thread *t) {
   assert(p.line == CF_MIN_LINE && p.column == 16);
   cf_clear_forms(&out);
 
-  p = cf_point(cf_id(t, "group test"), CF_MIN_LINE, CF_MIN_COLUMN);
+  cf_point_init(&p, cf_id(t, "group test"), CF_MIN_LINE, CF_MIN_COLUMN);
   assert(!*cf_parse(t, "(foo bar baz)", &p, &out));
   assert(cf_ok(t));
   assert(out.count == 1);
@@ -44,7 +45,7 @@ static void parse_tests(struct cf_thread *t) {
   assert(p.line == CF_MIN_LINE && p.column == 13);
   cf_clear_forms(&out);
 
-  p = cf_point(cf_id(t, "group test"), CF_MIN_LINE, CF_MIN_COLUMN);
+  cf_point_init(&p, cf_id(t, "group test"), CF_MIN_LINE, CF_MIN_COLUMN);
   assert(!*cf_parse(t, "foo(bar baz)", &p, &out));
   assert(cf_ok(t));
   assert(out.count == 3);
