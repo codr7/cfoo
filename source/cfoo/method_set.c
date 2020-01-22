@@ -6,14 +6,16 @@
 
 struct cf_method_set *cf_method_set_init(struct cf_method_set *set, const struct cf_id *id) {
   set->id = id;
-  c7_list_init(&set->methods);
+  set->count = 0;
+
+  c7_list_init(&set->items);
   return set;
 }
 
 void cf_method_set_deinit(struct cf_method_set *set) {}
 
 void cf_method_set_add(struct cf_method_set *set, struct cf_method *x) {
-  c7_list_do(&set->methods, _y) {
+  c7_list_do(&set->items, _y) {
     struct cf_method *y = c7_baseof(_y, struct cf_method, set);
 
     for (uint8_t i = 0; i < c7_min(x->arg_count, y->arg_count); i++) {
@@ -46,10 +48,12 @@ void cf_method_set_add(struct cf_method_set *set, struct cf_method *x) {
       
       if ((ya->type == CF_ARG_VALUE && (xa->type != CF_ARG_VALUE || xt->tag < yt->tag))) {
 	c7_list_insert(&y->set, &x->set);
+	set->count++;
 	return;
       }
     }
   }
 
-  c7_list_push_back(&set->methods, &x->set);
+  c7_list_push_back(&set->items, &x->set);
+  set->count++;
 }

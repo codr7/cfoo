@@ -5,6 +5,7 @@
 #include "cfoo/error.h"
 #include "cfoo/form.h"
 #include "cfoo/method.h"
+#include "cfoo/method_set.h"
 #include "cfoo/op.h"
 #include "cfoo/thread.h"
 #include "cfoo/value.h"
@@ -32,8 +33,16 @@ static void id_compile(struct cf_value *value,
 		       struct cf_code *out) {
   if (value->type == out->thread->method_type) {
     cf_op_init(c7_deque_push_back(&out->ops), CF_CALL)->as_call =
-      (struct cf_call_op){.method = cf_method_ref(value->as_method),
-			  .point = *point};  
+      (struct cf_call_op){.method = cf_method_ref(value->as_method), .point = *point};  
+  } else if (value->type == out->thread->method_set_type) {
+    struct cf_method_set *ms = value->as_method_set;
+
+    if (ms->count == 1) {
+      struct cf_method *m = c7_baseof(ms->items.next, struct cf_method, set);
+      
+      cf_op_init(c7_deque_push_back(&out->ops), CF_CALL)->as_call =
+	(struct cf_call_op){.method = cf_method_ref(m), .point = *point};
+    } else {}
   } else {
     cf_copy(&cf_op_init(c7_deque_push_back(&out->ops), CF_PUSH)->as_push.value,
 	    value);

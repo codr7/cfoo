@@ -1,6 +1,6 @@
 * add CF_DISPATCH op
 ** add cf_dispatch(method_set, stack)
-** generate CF_DISPATCH/CF_CALL depending on set count for MethodSet ids
+** generate CF_DISPATCH for MethodSet ids
 * add =, !=, <, >, <=, >= methods
 ** implement using cf_compare
 ** overload for meta type

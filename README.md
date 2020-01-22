@@ -21,6 +21,10 @@ Press Return in empty row to evaluate.
   ___
   
 []
+
+  now
+  
+[Time(2020-01-22 20:22:54)]
 ```
 
 ### license

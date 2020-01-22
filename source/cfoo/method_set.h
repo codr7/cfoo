@@ -7,7 +7,9 @@ struct cf_method;
 
 struct cf_method_set {
   const struct cf_id *id;
-  struct c7_list methods;
+  uint16_t count;
+
+  struct c7_list items;
 };
 
 struct cf_method_set *cf_method_set_init(struct cf_method_set *set, const struct cf_id *id);
