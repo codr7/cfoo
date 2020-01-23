@@ -32,9 +32,8 @@ struct cf_method {
 struct cf_method *cf_method_init(struct cf_method *method,
 				 struct cf_thread *thread,
 				 const struct cf_id *id,
-				 uint8_t arg_count, uint8_t ret_count,
-				 struct cf_arg *args,
-				 struct cf_ret *rets);
+				 uint8_t arg_count, struct cf_arg *args,
+				 uint8_t ret_count, struct cf_ret *rets);
 
 void cf_method_deinit(struct cf_method *method);
 
@@ -42,11 +41,14 @@ struct cf_method *cf_method_ref(struct cf_method *method);
 void cf_method_deref(struct cf_method *method);
 
 struct cf_method *cf_add_method(struct cf_thread *thread,
-				const struct cf_point *point,
-				struct c7_tree *bindings,
-				const struct cf_id *id,
-				uint8_t arg_count, uint8_t ret_count,
-				...);
+				struct cf_method_set *set,
+				uint8_t arg_count, struct cf_arg *args,
+				uint8_t ret_count, struct cf_ret *rets);
+
+struct cf_method *cf_bind_method(struct cf_thread *thread,
+				 const struct cf_id *id,
+				 uint8_t arg_count, uint8_t ret_count,
+				 ...);
 
 bool cf_call(struct cf_method *method, const struct cf_point *point);
 

@@ -11,9 +11,8 @@
 struct cf_method *cf_method_init(struct cf_method *method,
 				 struct cf_thread *thread,
 				 const struct cf_id *id,
-				 uint8_t arg_count, uint8_t ret_count,
-				 struct cf_arg *args,
-				 struct cf_ret *rets) {
+				 uint8_t arg_count, struct cf_arg *args,
+				 uint8_t ret_count, struct cf_ret *rets) {
   method->thread = thread;
   method->id = id;
   method->arg_count = arg_count;
@@ -57,40 +56,53 @@ void cf_method_deref(struct cf_method *method) {
 }
 
 struct cf_method *cf_add_method(struct cf_thread *thread,
-				const struct cf_point *point,
-				struct c7_tree *bindings,
-				const struct cf_id *id,
-				uint8_t arg_count, uint8_t ret_count,
-				...) {
-  struct cf_binding *b = c7_tree_find(bindings, id);
+				struct cf_method_set *set,
+				uint8_t arg_count, struct cf_arg *args,
+				uint8_t ret_count, struct cf_ret *rets) {
+  struct c7_stream id_buf;
+  c7_stream_init(&id_buf);
+  c7_stream_puts(&id_buf, set->id->name);
+  c7_stream_putc(&id_buf, '[');
+  
+  for (uint8_t i = 0; i < arg_count; i++) {
+    if (i) {
+      c7_stream_putc(&id_buf, ' ');
+    }
+    
+    c7_stream_puts(&id_buf, args[i].id->name);
+  }
+
+  c7_stream_putc(&id_buf, ']');
+  const struct cf_id *id = cf_id(thread, id_buf.data);
+  c7_stream_deinit(&id_buf);
+  
+  struct cf_method *m = cf_method_init(c7_tree_add(&thread->methods, id),
+				       thread, id, arg_count, args, ret_count, rets);
+
+  cf_method_set_add(set, m);
+  return m;
+}
+
+struct cf_method *cf_bind_method(struct cf_thread *thread,
+				 const struct cf_id *id,
+				 uint8_t arg_count, uint8_t ret_count,
+				 ...) {
+  struct cf_binding *b = c7_tree_find(&thread->bindings, id);
 
   if (!b) {
     struct cf_method_set *set = cf_method_set_init(c7_tree_add(&thread->method_sets, id), id);
-    b = cf_binding_init(c7_tree_add(bindings, id), bindings, id);
+    b = cf_binding_init(c7_tree_add(&thread->bindings, id), &thread->bindings, id);
     cf_value_init(&b->value, thread->method_set_type)->as_method_set = set;
   }
 
   va_list args;
   va_start(args, ret_count);
-
-  struct c7_stream id_buf;
-  c7_stream_init(&id_buf);
-  c7_stream_puts(&id_buf, id->name);
-  c7_stream_putc(&id_buf, '[');
-  
   struct cf_arg m_args[CF_MAX_ARGS];
   
   for (uint8_t i = 0; i < arg_count; i++) {
     m_args[i] = va_arg(args, struct cf_arg);
-
-    if (i) {
-      c7_stream_putc(&id_buf, ' ');
-    }
-    
-    c7_stream_puts(&id_buf, m_args[i].id->name);
   }
 
-  c7_stream_putc(&id_buf, ']');
   struct cf_ret m_rets[CF_MAX_RETS];
 
   for (uint8_t i = 0; i < ret_count; i++) {
@@ -98,17 +110,16 @@ struct cf_method *cf_add_method(struct cf_thread *thread,
   }
 
   va_end(args);
-
-  id = cf_id(thread, id_buf.data);
-  c7_stream_deinit(&id_buf);
   
-  struct cf_method *m = cf_method_init(c7_tree_add(&thread->methods, id),
-				       thread, id, arg_count, ret_count, m_args, m_rets);
+  struct cf_method *m = cf_add_method(thread,
+				      b->value.as_method_set,
+				      arg_count, m_args,
+				      ret_count, m_rets);
 
-  cf_value_init(&cf_binding_init(c7_tree_add(bindings, id), bindings, id)->value,
+  cf_value_init(&cf_binding_init(c7_tree_add(&thread->bindings, m->id),
+				 &thread->bindings, m->id)->value,
 		thread->method_type)->as_method = cf_method_ref(m);
 
-  cf_method_set_add(b->value.as_method_set, m);
   return m;
 }
 

@@ -1,3 +1,7 @@
+* remove point/bindings args to cf_add_method
+** extract cf_bind_method to do binding
+*** no varargs in cf_add_method
+* bind T/F constants in thread init
 * add CF_DISPATCH op
 ** add cf_dispatch(method_set, stack)
 ** generate CF_DISPATCH for MethodSet ids
@@ -11,5 +15,3 @@
 ** implement using cf_compare
 ** overload for meta type
 *** return false if cf_find_root() returns null
-* add T/F constants
-* add point/bindings arg to cf_add_type like method
