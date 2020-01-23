@@ -1,3 +1,5 @@
+* extract bool cf_applicable(struct cf_method *method, struct cf_value *stack_pointer) from cf_dispatch
+** use in call op eval
 * add +/- methods for Int64
 * add +/- methods for Time
 ** add days(n)/hours(n)/mins(n)/secs(n) time constructors

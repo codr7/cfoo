@@ -104,8 +104,21 @@ struct cf_method *cf_bind_method(struct cf_thread *thread,
     
     if (arg_count != ms->arg_count) {
       cf_error(thread, point, CF_ERUN,
-	       "Wrong number of method arguments: %" PRIu8 "/%" PRIu8,
+	       "Wrong number of method arguments: %" PRIu8 "(%" PRIu8 ")",
 	       arg_count, ms->arg_count);
+
+      return NULL;
+    }
+
+    for (uint8_t i = 0; i < ms->arg_count; i++) {
+      struct cf_arg *a = args + i;
+      if (a->type == CF_AINDEX && a->as_index >= ms->arg_count) {
+	cf_error(thread, point, CF_ERUN,
+		 "Argument index out of bounds: %" PRIu8 " (%" PRIu8 ")",
+		 a->as_index, ms->arg_count);
+	
+	return NULL;
+      }
     }
   } else {
     set = cf_bind(thread, id, thread->method_set_type);
