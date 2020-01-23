@@ -240,7 +240,7 @@ static struct cf_type *add_time_type(struct cf_thread *thread) {
 }
 
 static bool is_imp(struct cf_thread *thread, const struct cf_point *point) {
-  struct cf_value x = *cf_pop(thread), y = *cf_pop(thread);
+  struct cf_value y = *cf_pop(thread), x = *cf_pop(thread);
   cf_value_init(cf_push(thread, point), thread->bool_type)->as_bool = cf_is(&x, &y);
   cf_value_deinit(&x);
   cf_value_deinit(&y);
@@ -254,6 +254,27 @@ static bool debug_imp(struct cf_thread *thread, const struct cf_point *point) {
 	 thread->debug ? "enabled" : "disabled",
 	 point->file->name, point->line, point->column);
 
+  return true;
+}
+
+static bool int_add_imp(struct cf_thread *thread, const struct cf_point *point) {
+  struct cf_value y = *cf_pop(thread), *x = cf_peek(thread);
+  x->as_int64 += y.as_int64;
+  cf_value_deinit(&y);
+  return true;
+}
+
+static bool int_sub_imp(struct cf_thread *thread, const struct cf_point *point) {
+  struct cf_value y = *cf_pop(thread), *x = cf_peek(thread);
+  x->as_int64 -= y.as_int64;
+  cf_value_deinit(&y);
+  return true;
+}
+
+static bool int_mul_imp(struct cf_thread *thread, const struct cf_point *point) {
+  struct cf_value y = *cf_pop(thread), *x = cf_peek(thread);
+  x->as_int64 *= y.as_int64;
+  cf_value_deinit(&y);
   return true;
 }
 
@@ -317,7 +338,22 @@ struct cf_thread *cf_thread_new() {
   cf_bind_method(t, NULL, cf_id(t, "debug"),
 		 0, NULL,
 		 0, NULL)->imp = debug_imp;
-  
+
+  cf_bind_method(t, NULL, cf_id(t, "+"),
+		 2, (struct cf_arg[]){cf_arg_type(cf_id(t, "x"), t->int64_type),
+					cf_arg_type(cf_id(t, "y"), t->int64_type)},
+		 1, (struct cf_ret[]){cf_ret_type(t->int64_type)})->imp = int_add_imp;
+
+  cf_bind_method(t, NULL, cf_id(t, "-"),
+		 2, (struct cf_arg[]){cf_arg_type(cf_id(t, "x"), t->int64_type),
+					cf_arg_type(cf_id(t, "y"), t->int64_type)},
+		 1, (struct cf_ret[]){cf_ret_type(t->int64_type)})->imp = int_sub_imp;
+
+  cf_bind_method(t, NULL, cf_id(t, "*"),
+		 2, (struct cf_arg[]){cf_arg_type(cf_id(t, "x"), t->int64_type),
+					cf_arg_type(cf_id(t, "y"), t->int64_type)},
+		 1, (struct cf_ret[]){cf_ret_type(t->int64_type)})->imp = int_mul_imp;
+
   cf_bind_method(t, NULL, cf_id(t, "now"),
 		 0, NULL,
 		 1, (struct cf_ret[]){cf_ret_type(t->time_type)})->imp = now_imp;

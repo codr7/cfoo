@@ -1,6 +1,5 @@
 * extract bool cf_applicable(struct cf_method *method, struct cf_value *stack_pointer) from cf_dispatch
 ** use in call op eval
-* add +/- methods for Int64
 * add +/- methods for Time
 ** add days(n)/hours(n)/mins(n)/secs(n) time constructors
 * add =, <, >, <=, >= methods
@@ -8,9 +7,11 @@
 ** implement using cf_compare
 ** overload for meta type
 *** return false if cf_find_root() returns null
+* drop ref counting for types & methods
+** remove _ref()/deref() and deinit() in thread
 * add cf_type.bool_value method
 ** return true from default imp
 * add cf_arg_dump
 ** use to generate method id
-** dump values for literal args
-*** switch cf_dump to use stream
+*** dump values for CF_AVALUE
+**** switch cf_dump to use stream

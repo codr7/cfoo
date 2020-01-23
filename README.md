@@ -14,25 +14,43 @@ cfoo v0.1.1
 
 Press Return in empty row to evaluate.
 
+  42
+
+[42]
+```
+
+### syntax
+By default, arguments are expected to appear before function calls just like in Forth.
+
+```
+  1 2 +
+
+[3]
+```
+
+Prefix/infix notation may be activated by enclosing trailing arguments in parens.
+
+```
+  *(1 +(2) 3)
+
+[9]
+```
+
+### the stack
+Literals, references to constants and variables, and method results are pushed on the stack.
+
+```
   1 2 3
-  
+
 [1 2 3]
+```
 
-  ___
-  
-[]
+`_` may be used to pop the stack.
 
-  1 ==(2)
-  
-[F]
+```
+  1 2 3 _
 
-  _ 1 !==(2)
-  
-[T]
-
-  _ now
-  
-[Time(2020-01-22 20:22:54)]
+[1 2]
 ```
 
 ### license

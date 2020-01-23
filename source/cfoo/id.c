@@ -22,7 +22,7 @@ enum c7_order cf_id_compare(const struct cf_id *x,
 }
 
 bool cf_id_char(char c) {
-  return isalpha(c) || c == '=';
+  return isalpha(c) || c == '=' || c == '+' || c == '-' || c == '*';
 }
 
 const struct cf_id *cf_id(struct cf_thread *thread, const char *name) {
