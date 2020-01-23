@@ -247,6 +247,14 @@ static bool is_imp(struct cf_thread *thread, const struct cf_point *point) {
   return true;
 }
 
+static bool eq_imp(struct cf_thread *thread, const struct cf_point *point) {
+  struct cf_value y = *cf_pop(thread), x = *cf_pop(thread);
+  cf_value_init(cf_push(thread, point), thread->bool_type)->as_bool = cf_compare(&x, &y) == C7_EQ;
+  cf_value_deinit(&x);
+  cf_value_deinit(&y);
+  return true;
+}
+
 static bool debug_imp(struct cf_thread *thread, const struct cf_point *point) {
   thread->debug = !thread->debug;
   
@@ -334,6 +342,11 @@ struct cf_thread *cf_thread_new() {
 		 2, (struct cf_arg[]){cf_arg_type(cf_id(t, "x"), t->a_type),
 					cf_arg_index(cf_id(t, "y"), 0)},
 		 1, (struct cf_ret[]){cf_ret_type(t->bool_type)})->imp = is_imp;
+
+  cf_bind_method(t, NULL, cf_id(t, "="),
+		 2, (struct cf_arg[]){cf_arg_type(cf_id(t, "x"), t->a_type),
+					cf_arg_index(cf_id(t, "y"), 0)},
+		 1, (struct cf_ret[]){cf_ret_type(t->bool_type)})->imp = eq_imp;
 
   cf_bind_method(t, NULL, cf_id(t, "debug"),
 		 0, NULL,

@@ -53,6 +53,23 @@ Literals, references to constants and variables, and method results are pushed o
 [1 2]
 ```
 
+### identity & equality
+`=` returns true if the specified values are equal.
+
+```
+  =([1 2 3] [1 2 3])
+
+[T]
+```
+
+While `==` only returns true if they live at the same address. 
+
+```
+  ==([1 2 3] [1 2 3])
+
+[F]
+```
+
 ### license
 [MIT](https://github.com/codr7/cfoo/blob/master/LICENSE.txt)
 

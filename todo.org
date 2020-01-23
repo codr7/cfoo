@@ -1,14 +1,18 @@
 * drop ref counting for types & methods
 ** remove _ref()/deref() and deinit() in thread
+* add Queue type
+** implement using c7_deque
+** add literal support
+* add cf_type.bool_value method
+** return true from default imp
+** add to readme / !
 * add +/- methods for Time
 ** add days(n)/hours(n)/mins(n)/secs(n) time constructors
-* add =, <, >, <=, >= methods
+* add <, >, <=, >= methods
 ** add support for <> in cf_id_char()
 ** implement using cf_compare
 ** overload for meta type
 *** return false if cf_find_root() returns null
-* add cf_type.bool_value method
-** return true from default imp
 * fix method id for CF_AVALUE
 ** call cf_dump on as_value
 *** switch cf_dump to use stream
