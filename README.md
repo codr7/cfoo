@@ -45,7 +45,7 @@ Literals, references to constants and variables, and method results are pushed o
 [1 2 3]
 ```
 
-`_` may be used to pop the stack.
+`_` may be used to pop the top value.
 
 ```
   1 2 3 _
@@ -54,7 +54,7 @@ Literals, references to constants and variables, and method results are pushed o
 ```
 
 ### identity & equality
-`=` returns true if the specified values are equal.
+`=` returns true if specified values are equal.
 
 ```
   =([1 2 3] [1 2 3])
