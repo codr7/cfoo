@@ -3,7 +3,7 @@
 
 #include "cfoo/value.h"
 
-enum cf_arg_type {CF_ARG_INDEX, CF_ARG_TYPE, CF_ARG_VALUE};
+enum cf_arg_type {CF_AINDEX, CF_ATYPE, CF_AVALUE};
   
 struct cf_arg {
   enum cf_arg_type type;

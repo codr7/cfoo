@@ -8,6 +8,9 @@
 #include <codr7/tree.h>
 #include <stdbool.h>
 
+#include "cfoo/config.h"
+#include "cfoo/value.h"
+
 struct cf_point;
 struct cf_type;
 
@@ -33,12 +36,9 @@ struct cf_thread {
   struct c7_tree_pool binding_pool;
   struct c7_tree bindings;
 
-  struct c7_deque_pool stack_pool;
-  struct c7_deque stack;
-  
   struct c7_deque_pool op_pool;
   struct c7_chan chan;
-
+  
   uint64_t next_type_tag;
 
   struct cf_type *a_type,
@@ -46,12 +46,15 @@ struct cf_thread {
     *int64_type,
     *meta_type, *method_type, *method_set_type,
     *time_type;
+
+  struct cf_value stack[CF_MAX_STACK];
+  struct cf_value *stack_pointer;
 };
 
 struct cf_thread *cf_thread_new();
 void cf_thread_free(struct cf_thread *thread);
 
-struct cf_value *cf_push(struct cf_thread *thread);
+struct cf_value *cf_push(struct cf_thread *thread, const struct cf_point *point);
 struct cf_value *cf_peek(struct cf_thread *thread);
 struct cf_value *cf_pop(struct cf_thread *thread);
 

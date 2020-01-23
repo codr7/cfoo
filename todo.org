@@ -1,10 +1,6 @@
-* add CF_DISPATCH op
-** add cf_dispatch(method_set, stack)
-** generate CF_DISPATCH for MethodSet ids
-* add cf_arg_dump
-** use to generate method id
-** dump values for literal args
-*** switch cf_dump to use stream
+* add +/- methods for Int64
+* add +/- methods for Time
+** add days(n)/hours(n)/mins(n)/secs(n) time constructors
 * add =, <, >, <=, >= methods
 ** add support for <> in cf_id_char()
 ** implement using cf_compare
@@ -12,3 +8,7 @@
 *** return false if cf_find_root() returns null
 * add cf_type.bool_value method
 ** return true from default imp
+* add cf_arg_dump
+** use to generate method id
+** dump values for literal args
+*** switch cf_dump to use stream

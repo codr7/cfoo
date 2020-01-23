@@ -2,6 +2,7 @@
 
 #include "cfoo/error.h"
 #include "cfoo/method.h"
+#include "cfoo/method_set.h"
 #include "cfoo/op.h"
 #include "cfoo/thread.h"
 #include "cfoo/type.h"
@@ -26,6 +27,24 @@ void cf_op_deinit(struct cf_op *op) {
 
 static bool call_eval(struct cf_call_op *op) {
   return cf_call(op->method, &op->point);
+}
+
+static bool dispatch_eval(struct cf_dispatch_op *op, struct cf_thread *thread) {
+  struct cf_method_set *ms = op->set;
+  
+  if (thread->stack_pointer - thread->stack < ms->count) {
+    cf_error(thread, &op->point, CF_ERUN, "Method not applicable: %s", ms->id->name);
+    return false;
+  }
+
+  struct cf_method *m = cf_dispatch(ms, thread->stack_pointer - ms->count);
+
+  if (!m) {
+    cf_error(thread, &op->point, CF_ERUN, "Method not applicable: %s", ms->id->name);
+    return false;
+  }
+  
+  return cf_call(m, &op->point);
 }
 
 static bool drop_eval(struct cf_drop_op *op, struct cf_thread *thread) {
@@ -59,7 +78,7 @@ static bool not_eval(struct cf_not_op *op, struct cf_thread *thread) {
 }
 
 static bool push_eval(struct cf_push_op *op, struct cf_thread *thread) {
-  cf_copy(cf_push(thread), &op->value);
+  cf_copy(cf_push(thread, &op->point), &op->value);
   return true;
 }
 
@@ -67,6 +86,8 @@ bool cf_op_eval(struct cf_op *op, struct cf_thread *thread) {
   switch(op->type) {
   case CF_OCALL:
     return call_eval(&op->as_call);
+  case CF_ODISPATCH:
+    return dispatch_eval(&op->as_dispatch, thread);
   case CF_ODROP:
     return drop_eval(&op->as_drop, thread);
   case CF_ONOT:

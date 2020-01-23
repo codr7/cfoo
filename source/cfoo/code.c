@@ -28,24 +28,28 @@ void cf_code_clear(struct cf_code *code) {
   c7_deque_clear(&code->ops);
 }
 
-static void id_compile(struct cf_value *value,
-		       const struct cf_point *point,
+static void id_compile(const struct cf_point *point,
+		       struct cf_value *value,
 		       struct cf_code *out) {
   if (value->type == out->thread->method_type) {
     cf_op_init(c7_deque_push_back(&out->ops), CF_OCALL)->as_call =
-      (struct cf_call_op){.method = cf_method_ref(value->as_method), .point = *point};  
+      (struct cf_call_op){.point = *point, .method = cf_method_ref(value->as_method)};  
   } else if (value->type == out->thread->method_set_type) {
     struct cf_method_set *ms = value->as_method_set;
 
     if (ms->count == 1) {
-      struct cf_method *m = c7_baseof(ms->items.next, struct cf_method, set);
-      
+      struct cf_method *m = c7_baseof(ms->items.next, struct cf_method, set_item);
+
       cf_op_init(c7_deque_push_back(&out->ops), CF_OCALL)->as_call =
-	(struct cf_call_op){.method = cf_method_ref(m), .point = *point};
-    } else {}
+	(struct cf_call_op){.point = *point, .method = cf_method_ref(m)};
+    } else {
+      cf_op_init(c7_deque_push_back(&out->ops), CF_ODISPATCH)->as_dispatch =
+	(struct cf_dispatch_op){.point = *point, .set = ms};      
+    }
   } else {
-    cf_copy(&cf_op_init(c7_deque_push_back(&out->ops), CF_OPUSH)->as_push.value,
-	    value);
+    struct cf_push_op *op = &cf_op_init(c7_deque_push_back(&out->ops), CF_OPUSH)->as_push;
+    op->point = *point;
+    cf_copy(&op->value, value);
   }
 }
 
@@ -67,7 +71,7 @@ bool cf_compile(struct c7_deque *in,
       struct cf_binding *b = c7_tree_find(bindings, f->as_id);
       
       if (b) {
-	id_compile(&b->value, &f->point, out);
+	id_compile(&f->point, &b->value, out);
       } else {
 	cf_error(out->thread, &f->point, CF_EUNKNOWN, "Unknown id: %s", f->as_id->name);
 	return false;
@@ -84,13 +88,14 @@ bool cf_compile(struct c7_deque *in,
       cf_form_deinit(f);
       c7_deque_pop_front(in);
       break;        
-    case CF_FVALUE:
-      cf_copy(&cf_op_init(c7_deque_push_back(&out->ops), CF_OPUSH)->as_push.value,
-	      &f->as_value);
-      
+    case CF_FVALUE: {
+      struct cf_push_op *op = &cf_op_init(c7_deque_push_back(&out->ops), CF_OPUSH)->as_push;
+      op->point = f->point;
+      cf_copy(&op->value, &f->as_value);
       cf_form_deinit(f);
       c7_deque_pop_front(in);
       break;
+    }
     default:
       cf_error(out->thread, &f->point, CF_ESYNTAX, "Unexpected form");
       return false;

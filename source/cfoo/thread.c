@@ -241,7 +241,7 @@ static struct cf_type *add_time_type(struct cf_thread *thread) {
 
 static bool is_imp(struct cf_thread *thread, const struct cf_point *point) {
   struct cf_value x = *cf_pop(thread), y = *cf_pop(thread);
-  cf_value_init(cf_push(thread), thread->bool_type)->as_bool = cf_is(&x, &y);
+  cf_value_init(cf_push(thread, point), thread->bool_type)->as_bool = cf_is(&x, &y);
   cf_value_deinit(&x);
   cf_value_deinit(&y);
   return true;
@@ -258,7 +258,7 @@ static bool debug_imp(struct cf_thread *thread, const struct cf_point *point) {
 }
 
 static bool now_imp(struct cf_thread *thread, const struct cf_point *point) {
-  if (!timespec_get(&cf_value_init(cf_push(thread), thread->time_type)->as_time,
+  if (!timespec_get(&cf_value_init(cf_push(thread, point), thread->time_type)->as_time,
 		    TIME_UTC)) {
     cf_error(thread, point, CF_ERUN, "Failed getting time: %d", errno);
     return false;
@@ -292,9 +292,6 @@ struct cf_thread *cf_thread_new() {
   c7_tree_pool_init(&t->binding_pool, CF_SLAB_SIZE, sizeof(struct cf_binding));
   c7_tree_init(&t->bindings, compare_binding, &t->binding_pool);
 
-  c7_deque_pool_init(&t->stack_pool, CF_SLAB_SIZE, sizeof(struct cf_value));
-  c7_deque_init(&t->stack, &t->stack_pool);
-  
   c7_deque_pool_init(&t->op_pool, CF_SLAB_SIZE, sizeof(struct cf_op));
   c7_chan_init(&t->chan, CF_SLAB_SIZE, sizeof(struct cf_value), 0);
 
@@ -311,14 +308,21 @@ struct cf_thread *cf_thread_new() {
 
   cf_bind(t, cf_id(t, "T"), t->bool_type)->as_bool = true;
   cf_bind(t, cf_id(t, "F"), t->bool_type)->as_bool = false;
-  
-  cf_bind_method(t, cf_id(t, "=="), 2, 1,
-		cf_arg_type(cf_id(t, "x"), t->a_type), cf_arg_index(cf_id(t, "y"), 0),
-		cf_ret_type(t->bool_type))->imp = is_imp;
 
-  cf_bind_method(t, cf_id(t, "debug"), 0, 0)->imp = debug_imp;
-  cf_bind_method(t, cf_id(t, "now"), 0, 1, cf_ret_type(t->time_type))->imp = now_imp;
+  cf_bind_method(t, NULL, cf_id(t, "=="),
+		 2, (struct cf_arg[]){cf_arg_type(cf_id(t, "x"), t->a_type),
+					cf_arg_index(cf_id(t, "y"), 0)},
+		 1, (struct cf_ret[]){cf_ret_type(t->bool_type)})->imp = is_imp;
+
+  cf_bind_method(t, NULL, cf_id(t, "debug"),
+		 0, NULL,
+		 0, NULL)->imp = debug_imp;
   
+  cf_bind_method(t, NULL, cf_id(t, "now"),
+		 0, NULL,
+		 1, (struct cf_ret[]){cf_ret_type(t->time_type)})->imp = now_imp;
+
+  t->stack_pointer = t->stack;
   return t;
 }
 
@@ -326,12 +330,9 @@ void cf_thread_free(struct cf_thread *thread) {
   c7_chan_deinit(&thread->chan);
   c7_deque_pool_deinit(&thread->op_pool);
 
-  c7_deque_do(&thread->stack, v) {
+  for (struct cf_value *v = thread->stack; v < thread->stack_pointer; v++) {
     cf_value_deinit(v);
   }
-
-  c7_deque_clear(&thread->stack);
-  c7_deque_pool_deinit(&thread->stack_pool);
 
   c7_tree_do(&thread->bindings, b) {
     cf_binding_deinit(b);
@@ -373,22 +374,25 @@ void cf_thread_free(struct cf_thread *thread) {
   free(thread);
 }
 
-struct cf_value *cf_push(struct cf_thread *thread) {
-  return c7_deque_push_back(&thread->stack);
-}
-
-struct cf_value *cf_peek(struct cf_thread *thread) {
-  return thread->stack.count ? c7_deque_back(&thread->stack) : NULL;
-}
-
-struct cf_value *cf_pop(struct cf_thread *thread) {
-  if (!thread->stack.count) {
+struct cf_value *cf_push(struct cf_thread *thread, const struct cf_point *point) {
+  if (thread->stack_pointer - thread->stack == CF_MAX_STACK) {
+    cf_error(thread, point, CF_ERUN, "Stack overflow");
     return NULL;
   }
   
-  struct cf_value *v = c7_deque_back(&thread->stack);
-  c7_deque_pop_back(&thread->stack);
-  return v;
+  return thread->stack_pointer++;
+}
+
+struct cf_value *cf_peek(struct cf_thread *thread) {
+  return (thread->stack_pointer > thread->stack) ? thread->stack_pointer - 1 : NULL;
+}
+
+struct cf_value *cf_pop(struct cf_thread *thread) {
+  if (thread->stack_pointer == thread->stack) {
+    return NULL;
+  }
+  
+  return --thread->stack_pointer;
 }
 
 struct cf_value *cf_bind(struct cf_thread *thread, const struct cf_id *id, struct cf_type *type) {
@@ -407,8 +411,8 @@ void cf_dump_stack(struct cf_thread *thread,
 		   FILE *out) {
   fputc('[', out);
   bool sep = false;
-    
-  c7_deque_do(&thread->stack, v) {
+
+  for (struct cf_value *v = thread->stack; v < thread->stack_pointer; v++) {
     if (sep) {
       fputc(' ', out);
     } else {

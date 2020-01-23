@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 
-enum cf_ret_type {CF_RET_INDEX, CF_RET_TYPE};
+enum cf_ret_type {CF_RINDEX, CF_RTYPE};
   
 struct cf_ret {
   enum cf_ret_type type;
