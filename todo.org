@@ -6,6 +6,10 @@
 * add CF_DISPATCH op
 ** add cf_dispatch(method_set, stack)
 ** generate CF_DISPATCH for MethodSet ids
+* add cf_arg_dump
+** use to generate method id
+** dump values for literal args
+*** switch cf_dump to use stream
 * add =, <, >, <=, >= methods
 ** add support for <> in cf_id_char()
 ** implement using cf_compare
