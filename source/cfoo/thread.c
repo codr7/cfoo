@@ -309,6 +309,9 @@ struct cf_thread *cf_thread_new() {
   t->int64_type = add_int64_type(t);
   t->time_type = add_time_type(t);
 
+  cf_bind(t, cf_id(t, "T"), t->bool_type)->as_bool = true;
+  cf_bind(t, cf_id(t, "F"), t->bool_type)->as_bool = false;
+  
   cf_bind_method(t, cf_id(t, "=="), 2, 1,
 		cf_arg_type(cf_id(t, "x"), t->a_type), cf_arg_index(cf_id(t, "y"), 0),
 		cf_ret_type(t->bool_type))->imp = is_imp;
@@ -382,6 +385,17 @@ struct cf_value *cf_pop(struct cf_thread *thread) {
   struct cf_value *v = c7_deque_back(&thread->stack);
   c7_deque_pop_back(&thread->stack);
   return v;
+}
+
+struct cf_value *cf_bind(struct cf_thread *thread, const struct cf_id *id, struct cf_type *type) {
+  return cf_value_init(&cf_binding_init(c7_tree_add(&thread->bindings, id),
+					&thread->bindings, id)->value,
+		       type);
+}
+
+struct cf_value *cf_find(struct cf_thread *thread, const struct cf_id *id) {
+  struct cf_binding *b = c7_tree_find(&thread->bindings, id);
+  return b ? &b->value : NULL;
 }
 
 void cf_dump_stack(struct cf_thread *thread,

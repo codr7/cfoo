@@ -87,12 +87,11 @@ struct cf_method *cf_bind_method(struct cf_thread *thread,
 				 const struct cf_id *id,
 				 uint8_t arg_count, uint8_t ret_count,
 				 ...) {
-  struct cf_binding *b = c7_tree_find(&thread->bindings, id);
+  struct cf_value *set = cf_find(thread, id);
 
-  if (!b) {
-    struct cf_method_set *set = cf_method_set_init(c7_tree_add(&thread->method_sets, id), id);
-    b = cf_binding_init(c7_tree_add(&thread->bindings, id), &thread->bindings, id);
-    cf_value_init(&b->value, thread->method_set_type)->as_method_set = set;
+  if (!set) {
+    set = cf_bind(thread, id, thread->method_set_type);
+    set->as_method_set = cf_method_set_init(c7_tree_add(&thread->method_sets, id), id);
   }
 
   va_list args;
@@ -112,14 +111,11 @@ struct cf_method *cf_bind_method(struct cf_thread *thread,
   va_end(args);
   
   struct cf_method *m = cf_add_method(thread,
-				      b->value.as_method_set,
+				      set->as_method_set,
 				      arg_count, m_args,
 				      ret_count, m_rets);
 
-  cf_value_init(&cf_binding_init(c7_tree_add(&thread->bindings, m->id),
-				 &thread->bindings, m->id)->value,
-		thread->method_type)->as_method = cf_method_ref(m);
-
+  cf_bind(thread, m->id, thread->method_type)->as_method = cf_method_ref(m);
   return m;
 }
 

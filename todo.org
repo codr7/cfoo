@@ -1,15 +1,11 @@
-* remove point/bindings args to cf_add_method
-** extract cf_bind_method to do binding
-*** no varargs in cf_add_method
-* bind T/F constants in thread init
-* add CF_DISPATCH op
-** add cf_dispatch(method_set, stack)
-** generate CF_DISPATCH for MethodSet ids
 * add ! support
 ** add CF_EXCLAIM form
 ** hardcode in parser
 *** parse id and push after if followed directly by id
 ** CF_NOT op
+* add CF_DISPATCH op
+** add cf_dispatch(method_set, stack)
+** generate CF_DISPATCH for MethodSet ids
 * add =, <, >, <=, >= methods
 ** add support for <> in cf_id_char()
 ** implement using cf_compare
