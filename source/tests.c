@@ -28,7 +28,7 @@ static void parse_tests(struct cf_thread *t) {
 
   c7_deque_do(&out, _f) {
     struct cf_form *f = _f;
-    assert(f->type == CF_VALUE);
+    assert(f->type == CF_FVALUE);
     assert(f->as_value.as_int64 == 42);
   }
 
@@ -40,7 +40,7 @@ static void parse_tests(struct cf_thread *t) {
   assert(cf_ok(t));
   assert(out.count == 1);
   struct cf_form *f = c7_deque_back(&out);
-  assert(f->type = CF_GROUP);
+  assert(f->type = CF_FGROUP);
   assert(f->as_group.count == 3);
   assert(p.line == CF_MIN_LINE && p.column == 13);
   cf_clear_forms(&out);

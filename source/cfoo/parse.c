@@ -52,7 +52,7 @@ const char *cf_parse_form(struct cf_thread *thread,
   case 0:
     return in;
   case '_':
-    cf_form_init(c7_deque_push_back(out), CF_UNDER, point, thread);
+    cf_form_init(c7_deque_push_back(out), CF_FDROP, point, thread);
     point->column++;
     return ++in;
   case '!':
@@ -63,7 +63,7 @@ const char *cf_parse_form(struct cf_thread *thread,
       in = cf_parse_id(thread, in, point, out);
     }
     
-    cf_form_init(c7_deque_push_back(out), CF_EXCLAIM, point, thread);
+    cf_form_init(c7_deque_push_back(out), CF_FNOT, point, thread);
     return in;
   case '(':
     return cf_parse_group(thread, in, point, out);
@@ -93,7 +93,7 @@ const char *cf_parse_group(struct cf_thread *thread,
   }
 
   struct cf_form *f =
-    cf_form_init(c7_deque_push_back(out), CF_GROUP, point, thread);
+    cf_form_init(c7_deque_push_back(out), CF_FGROUP, point, thread);
 
   in++;
   point->column++;
@@ -156,7 +156,7 @@ const char *cf_parse_id(struct cf_thread *thread,
     c7_deque_clear(&g);
   }
 
-  cf_form_init(c7_deque_push_back(out), CF_ID, &start_point, thread)->as_id = cf_id(thread, name);
+  cf_form_init(c7_deque_push_back(out), CF_FID, &start_point, thread)->as_id = cf_id(thread, name);
   return in;
 }
 
@@ -222,7 +222,7 @@ const char *cf_parse_num(struct cf_thread *thread,
   }
 
   cf_value_init(&cf_form_init(c7_deque_push_back(out),
-			      CF_VALUE,
+			      CF_FVALUE,
 			      &start_point,
 			      thread)->as_value,
 		thread->int64_type)->as_int64 = v;

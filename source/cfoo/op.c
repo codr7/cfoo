@@ -13,10 +13,10 @@ struct cf_op *cf_op_init(struct cf_op *op, enum cf_op_type type) {
 
 void cf_op_deinit(struct cf_op *op) {
   switch (op->type) {
-  case CF_CALL:
+  case CF_OCALL:
     cf_method_deref(op->as_call.method);
     break;
-  case CF_PUSH:
+  case CF_OPUSH:
     cf_value_deinit(&op->as_push.value);
     break;
   default:
@@ -65,13 +65,13 @@ static bool push_eval(struct cf_push_op *op, struct cf_thread *thread) {
 
 bool cf_op_eval(struct cf_op *op, struct cf_thread *thread) {
   switch(op->type) {
-  case CF_CALL:
+  case CF_OCALL:
     return call_eval(&op->as_call);
-  case CF_DROP:
+  case CF_ODROP:
     return drop_eval(&op->as_drop, thread);
-  case CF_NOT:
+  case CF_ONOT:
     return not_eval(&op->as_not, thread);
-  case CF_PUSH:
+  case CF_OPUSH:
     return push_eval(&op->as_push, thread);
   default:
     abort();

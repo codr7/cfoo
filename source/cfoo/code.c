@@ -32,7 +32,7 @@ static void id_compile(struct cf_value *value,
 		       const struct cf_point *point,
 		       struct cf_code *out) {
   if (value->type == out->thread->method_type) {
-    cf_op_init(c7_deque_push_back(&out->ops), CF_CALL)->as_call =
+    cf_op_init(c7_deque_push_back(&out->ops), CF_OCALL)->as_call =
       (struct cf_call_op){.method = cf_method_ref(value->as_method), .point = *point};  
   } else if (value->type == out->thread->method_set_type) {
     struct cf_method_set *ms = value->as_method_set;
@@ -40,11 +40,11 @@ static void id_compile(struct cf_value *value,
     if (ms->count == 1) {
       struct cf_method *m = c7_baseof(ms->items.next, struct cf_method, set);
       
-      cf_op_init(c7_deque_push_back(&out->ops), CF_CALL)->as_call =
+      cf_op_init(c7_deque_push_back(&out->ops), CF_OCALL)->as_call =
 	(struct cf_call_op){.method = cf_method_ref(m), .point = *point};
     } else {}
   } else {
-    cf_copy(&cf_op_init(c7_deque_push_back(&out->ops), CF_PUSH)->as_push.value,
+    cf_copy(&cf_op_init(c7_deque_push_back(&out->ops), CF_OPUSH)->as_push.value,
 	    value);
   }
 }
@@ -56,7 +56,14 @@ bool cf_compile(struct c7_deque *in,
     struct cf_form *f = c7_deque_front(in);
 
     switch (f->type) {
-    case CF_ID: {
+    case CF_FDROP:
+      cf_op_init(c7_deque_push_back(&out->ops), CF_ODROP)->as_drop =
+	(struct cf_drop_op){.point = f->point};  
+      
+      cf_form_deinit(f);
+      c7_deque_pop_front(in);
+      break;
+    case CF_FID: {
       struct cf_binding *b = c7_tree_find(bindings, f->as_id);
       
       if (b) {
@@ -70,22 +77,15 @@ bool cf_compile(struct c7_deque *in,
       c7_deque_pop_front(in);
       break;
     }
-    case CF_EXCLAIM:
-      cf_op_init(c7_deque_push_back(&out->ops), CF_NOT)->as_not =
+    case CF_FNOT:
+      cf_op_init(c7_deque_push_back(&out->ops), CF_ONOT)->as_not =
 	(struct cf_not_op){.point = f->point};  
       
       cf_form_deinit(f);
       c7_deque_pop_front(in);
-      break;      
-    case CF_UNDER:
-      cf_op_init(c7_deque_push_back(&out->ops), CF_DROP)->as_drop =
-	(struct cf_drop_op){.point = f->point};  
-      
-      cf_form_deinit(f);
-      c7_deque_pop_front(in);
-      break;      
-    case CF_VALUE:
-      cf_copy(&cf_op_init(c7_deque_push_back(&out->ops), CF_PUSH)->as_push.value,
+      break;        
+    case CF_FVALUE:
+      cf_copy(&cf_op_init(c7_deque_push_back(&out->ops), CF_OPUSH)->as_push.value,
 	      &f->as_value);
       
       cf_form_deinit(f);

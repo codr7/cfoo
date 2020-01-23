@@ -6,7 +6,7 @@
 
 struct cf_method;
 
-enum cf_op_type {CF_CALL, CF_DROP, CF_NOT, CF_PUSH};
+enum cf_op_type {CF_OCALL, CF_ODISPATCH, CF_ODROP, CF_ONOT, CF_OPUSH};
 
 struct cf_call_op {
   struct cf_method *method;

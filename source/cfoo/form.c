@@ -10,7 +10,7 @@ struct cf_form *cf_form_init(struct cf_form *form,
   form->point = *point;
   
   switch (type) {
-  case CF_GROUP:
+  case CF_FGROUP:
     c7_deque_init(&form->as_group, &thread->form_pool);
     break;
   default:
@@ -22,10 +22,10 @@ struct cf_form *cf_form_init(struct cf_form *form,
 
 void cf_form_deinit(struct cf_form *form) {
   switch (form->type) {
-  case CF_GROUP:
+  case CF_FGROUP:
     cf_clear_forms(&form->as_group);
     break;
-  case CF_VALUE:
+  case CF_FVALUE:
     cf_value_deinit(&form->as_value);
     break;
   default:
