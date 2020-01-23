@@ -25,7 +25,19 @@ void cf_op_deinit(struct cf_op *op) {
   }
 }
 
-static bool call_eval(struct cf_call_op *op) {
+static bool call_eval(struct cf_call_op *op, struct cf_thread *thread) {
+  struct cf_method *m = op->method;
+
+  if (thread->stack_pointer - thread->stack < m->set->arg_count) {
+    cf_error(thread, &op->point, CF_ERUN, "Method not applicable: %s", m->id->name);
+    return false;
+  }
+
+  if (!cf_applicable(m, thread->stack_pointer - m->set->arg_count)) {
+    cf_error(thread, &op->point, CF_ERUN, "Method not applicable: %s", m->id->name);
+    return false;
+  }
+
   return cf_call(op->method, &op->point);
 }
 
@@ -37,7 +49,7 @@ static bool dispatch_eval(struct cf_dispatch_op *op, struct cf_thread *thread) {
     return false;
   }
 
-  struct cf_method *m = cf_dispatch(ms, thread->stack_pointer - ms->count);
+  struct cf_method *m = cf_dispatch(ms, thread->stack_pointer - ms->arg_count);
 
   if (!m) {
     cf_error(thread, &op->point, CF_ERUN, "Method not applicable: %s", ms->id->name);
@@ -85,7 +97,7 @@ static bool push_eval(struct cf_push_op *op, struct cf_thread *thread) {
 bool cf_op_eval(struct cf_op *op, struct cf_thread *thread) {
   switch(op->type) {
   case CF_OCALL:
-    return call_eval(&op->as_call);
+    return call_eval(&op->as_call, thread);
   case CF_ODISPATCH:
     return dispatch_eval(&op->as_dispatch, thread);
   case CF_ODROP:

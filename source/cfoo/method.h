@@ -56,6 +56,7 @@ struct cf_method *cf_bind_method(struct cf_thread *thread,
 				 uint8_t arg_count, struct cf_arg *args,
 				 uint8_t ret_count, struct cf_ret *rets);
 
+bool cf_applicable(struct cf_method *method, struct cf_value *stack_pointer);
 bool cf_call(struct cf_method *method, const struct cf_point *point);
 
 #endif

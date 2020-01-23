@@ -64,25 +64,8 @@ void cf_method_set_add(struct cf_method_set *set, struct cf_method *x) {
 struct cf_method *cf_dispatch(struct cf_method_set *set, struct cf_value *stack_pointer) {
   c7_list_do(&set->items, _m) {
     struct cf_method *m = c7_baseof(_m, struct cf_method, set_item);
-    struct cf_arg *a = m->args;
-    struct cf_value *s = stack_pointer;
-    uint8_t i = 0;
     
-    for (; i < set->count; i++, a++, s++) {
-      if (a->type == CF_ATYPE && !cf_find_root(s->type, a->as_type, true)) {
-	break;
-      }
-      
-      if (a->type == CF_AINDEX && !cf_find_root(s->type, stack_pointer[a->as_index].type, true)) {
-	break;
-      }
-
-      if (a->type == CF_AVALUE && cf_compare(s, &a->as_value) != C7_EQ) {
-	break;
-      }
-    }
-
-    if (i == set->count) {
+    if (cf_applicable(m, stack_pointer)) {
       return m;
     }
   }

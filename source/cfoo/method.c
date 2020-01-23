@@ -1,5 +1,6 @@
 #include <codr7/stream.h>
 #include <codr7/tree.h>
+#include <stdlib.h>
 
 #include "cfoo/binding.h"
 #include "cfoo/error.h"
@@ -7,6 +8,7 @@
 #include "cfoo/method.h"
 #include "cfoo/method_set.h"
 #include "cfoo/thread.h"
+#include "cfoo/type.h"
 #include "cfoo/value.h"
 
 struct cf_method *cf_method_init(struct cf_method *method,
@@ -80,8 +82,19 @@ struct cf_method *cf_add_method(struct cf_thread *thread,
     if (i) {
       c7_stream_putc(&id_buf, ' ');
     }
+
+    struct cf_arg *a = args + i;
     
-    c7_stream_puts(&id_buf, args[i].id->name);
+    switch (a->type) {
+    case CF_AINDEX:
+      c7_stream_printf(&id_buf, "%" PRIu8, a->as_index);
+      break;
+    case CF_ATYPE:
+      c7_stream_puts(&id_buf, a->as_type->id->name);
+      break;
+    case CF_AVALUE:
+      abort();
+    }
   }
 
   c7_stream_putc(&id_buf, ']');
@@ -133,6 +146,27 @@ struct cf_method *cf_bind_method(struct cf_thread *thread,
 
   cf_bind(thread, m->id, thread->method_type)->as_method = cf_method_ref(m);
   return m;
+}
+
+bool cf_applicable(struct cf_method *method, struct cf_value *stack_pointer) {
+    struct cf_arg *a = method->args;
+    struct cf_value *s = stack_pointer;
+    
+    for (uint8_t i = 0; i < method->set->arg_count; i++, a++, s++) {
+      if (a->type == CF_ATYPE && !cf_find_root(s->type, a->as_type, true)) {
+	return false;
+      }
+      
+      if (a->type == CF_AINDEX && !cf_find_root(s->type, stack_pointer[a->as_index].type, true)) {
+	return false;
+      }
+
+      if (a->type == CF_AVALUE && cf_compare(s, &a->as_value) != C7_EQ) {
+	return false;
+      }
+    }
+
+    return true;
 }
 
 bool cf_call(struct cf_method *method, const struct cf_point *point) {

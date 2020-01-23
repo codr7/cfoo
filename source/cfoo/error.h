@@ -13,7 +13,7 @@
 	    code,							\
 	    "Error in %s, line %" PRId16 ", column %" PRId16 "\n"	\
 	    spec,							\
-	    _point ? "?" : _point->file->name,				\
+	    _point ? _point->file->name : "?",				\
 	    _point ? _point->line : -1,					\
 	    _point ? _point->column : -1,				\
 	    ## __VA_ARGS__, NULL);					\
