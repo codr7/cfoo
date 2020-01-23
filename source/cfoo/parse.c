@@ -55,6 +55,16 @@ const char *cf_parse_form(struct cf_thread *thread,
     cf_form_init(c7_deque_push_back(out), CF_UNDER, point, thread);
     point->column++;
     return ++in;
+  case '!':
+    point->column++;
+    in++;
+    
+    if (cf_id_char(*in)) {
+      in = cf_parse_id(thread, in, point, out);
+    }
+    
+    cf_form_init(c7_deque_push_back(out), CF_EXCLAIM, point, thread);
+    return in;
   case '(':
     return cf_parse_group(thread, in, point, out);
   default:

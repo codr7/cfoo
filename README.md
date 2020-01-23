@@ -26,11 +26,11 @@ Press Return in empty row to evaluate.
   
 [F]
 
-  1 ==(1)
+  _ 1 !==(2)
   
-[F T]
+[T]
 
-  __ now
+  _ now
   
 [Time(2020-01-22 20:22:54)]
 ```

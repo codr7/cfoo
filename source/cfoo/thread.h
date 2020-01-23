@@ -52,7 +52,9 @@ struct cf_thread *cf_thread_new();
 void cf_thread_free(struct cf_thread *thread);
 
 struct cf_value *cf_push(struct cf_thread *thread);
+struct cf_value *cf_peek(struct cf_thread *thread);
 struct cf_value *cf_pop(struct cf_thread *thread);
+
 struct cf_value *cf_bind(struct cf_thread *thread, const struct cf_id *id, struct cf_type *type);
 struct cf_value *cf_find(struct cf_thread *thread, const struct cf_id *id);
 

@@ -6,7 +6,7 @@
 
 struct cf_method;
 
-enum cf_op_type {CF_CALL, CF_DROP, CF_PUSH};
+enum cf_op_type {CF_CALL, CF_DROP, CF_NOT, CF_PUSH};
 
 struct cf_call_op {
   struct cf_method *method;
@@ -14,6 +14,10 @@ struct cf_call_op {
 };
 
 struct cf_drop_op {
+  struct cf_point point;
+};
+
+struct cf_not_op {
   struct cf_point point;
 };
 
@@ -27,6 +31,7 @@ struct cf_op {
   union {
     struct cf_call_op as_call;
     struct cf_drop_op as_drop;
+    struct cf_not_op as_not;
     struct cf_push_op as_push;
   };
 };

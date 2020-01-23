@@ -4,6 +4,7 @@
 #include "cfoo/method.h"
 #include "cfoo/op.h"
 #include "cfoo/thread.h"
+#include "cfoo/type.h"
 
 struct cf_op *cf_op_init(struct cf_op *op, enum cf_op_type type) {
   op->type = type;
@@ -40,6 +41,23 @@ static bool drop_eval(struct cf_drop_op *op, struct cf_thread *thread) {
   
 }
 
+static bool not_eval(struct cf_not_op *op, struct cf_thread *thread) {
+  struct cf_value *v = cf_peek(thread);
+
+  if (!v) {
+    cf_error(thread, &op->point, CF_ERUN, "Nothing to negate");
+    return false;
+  }
+  
+  if (v->type != thread->bool_type) {
+    cf_error(thread, &op->point, CF_ERUN, "Negation not supported: %s", v->type->id->name);
+    return false;
+  }
+ 
+  v->as_bool = !v->as_bool;
+  return true;
+}
+
 static bool push_eval(struct cf_push_op *op, struct cf_thread *thread) {
   cf_copy(cf_push(thread), &op->value);
   return true;
@@ -51,6 +69,8 @@ bool cf_op_eval(struct cf_op *op, struct cf_thread *thread) {
     return call_eval(&op->as_call);
   case CF_DROP:
     return drop_eval(&op->as_drop, thread);
+  case CF_NOT:
+    return not_eval(&op->as_not, thread);
   case CF_PUSH:
     return push_eval(&op->as_push, thread);
   default:

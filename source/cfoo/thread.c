@@ -377,6 +377,10 @@ struct cf_value *cf_push(struct cf_thread *thread) {
   return c7_deque_push_back(&thread->stack);
 }
 
+struct cf_value *cf_peek(struct cf_thread *thread) {
+  return thread->stack.count ? c7_deque_back(&thread->stack) : NULL;
+}
+
 struct cf_value *cf_pop(struct cf_thread *thread) {
   if (!thread->stack.count) {
     return NULL;
